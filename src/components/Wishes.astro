@@ -1,6 +1,3 @@
----
-// Closed until the wishes API is connected. Never simulate a saved submission.
----
 <section id="wishes" class="section wishes" aria-labelledby="wishes-heading">
   <div class="narrow">
     <header class="center" data-reveal>
@@ -9,7 +6,8 @@
       <p class="intro">Sepatah doa, sejuta makna.<br />Titipkan harapan baik untuk awal perjalanan kami.</p>
     </header>
     <form aria-describedby="wishes-note" data-wishes-form>
-      <p id="wishes-note" class="notice"><span aria-hidden="true">✧</span> Buku ucapan akan segera dibuka.</p>
+      <p id="wishes-note" class="notice" data-wishes-note>Gunakan tautan undangan pribadi Anda untuk mengirim ucapan. Ucapan ditampilkan setelah disetujui.</p>
+      <noscript><p>Aktifkan JavaScript untuk membaca dan mengirim ucapan.</p></noscript>
       <fieldset disabled>
         <legend class="sr-only">Tulis doa dan ucapan</legend>
         <div class="field"><label for="wish-name">Nama Anda</label><input id="wish-name" name="name" autocomplete="name" maxlength="100" placeholder="Tulis nama Anda" required /></div>
@@ -18,8 +16,9 @@
       </fieldset>
       <p class="status" role="status" data-wishes-status></p>
     </form>
-    <div class="empty center" data-wishes-list aria-live="polite"><span class="empty-mark" aria-hidden="true">❧</span><p>Ruang kecil untuk doa-doa yang indah.</p><p class="muted">Ucapan akan hadir di sini setelah buku dibuka.</p></div>
-    <button class="button" type="button" data-wishes-more hidden>Muat ucapan lainnya</button>
+    <h3 class="latest-heading">Ucapan terbaru</h3>
+    <p class="list-status" role="status" data-wishes-list-status>Ruang kecil untuk doa-doa yang indah.</p>
+    <div class="wish-list" data-wishes-list></div>
   </div>
 </section>
 <style>
@@ -28,9 +27,13 @@
   form { margin-top: 2.5rem; padding: clamp(1.25rem, 4vw, 2.2rem); border: 1px solid var(--line); }
   .notice { margin-bottom: 1.5rem; font-size: .75rem; color: var(--muted); }
   .notice span { color: var(--accent); padding-right: .4rem; }
-  .empty { margin-top: 2rem; padding: 1rem 0; }
-  .empty-mark { font-size: 2rem; color: #82926c; }
-  .empty p { margin: .2rem 0; font-family: var(--font-display); font-size: 1.2rem; }
-  .empty .muted { font-family: var(--font-body); font-size: .7rem; }
   .status:empty { display: none; }
+  .latest-heading { margin-top: 2.5rem; font-family: var(--font-display); font-size: 1.7rem; }
+  .list-status { color: var(--muted); font-size: .8rem; }
+  .list-status:empty { display: none; }
+  .wish-list { display: grid; gap: 1rem; margin: 1rem 0 1.5rem; }
+  .wish-list :global(article) { border: 1px solid var(--line); background: var(--paper); padding: 1.25rem; overflow-wrap: anywhere; }
+  .wish-list :global(h4) { margin: 0; color: var(--ink); font-family: var(--font-display); font-size: 1.3rem; }
+  .wish-list :global(p) { white-space: pre-wrap; font-size: .9rem; line-height: 1.7; margin-bottom: .7rem; }
+  .wish-list :global(time) { font-size: .65rem; color: var(--muted); }
 </style>

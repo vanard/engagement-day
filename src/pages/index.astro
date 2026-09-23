@@ -20,7 +20,7 @@ import { invitation } from '../content/invitation';
             <p class="eyebrow">Together with our families</p>
             <h1>We're Engaged</h1>
             <p class="introduction">Come celebrate love<br />and a brand new chapter with us.</p>
-            <img class="portrait engaged" src={invitation.artwork.engaged} width="390" height="416" alt="Ilustrasi Vian dan Ghea memperlihatkan cincin lamaran" />
+            <img class="portrait engaged" src={invitation.artwork.engaged} srcset={`${invitation.artwork.engagedSmall} 620w, ${invitation.artwork.engaged} 930w`} sizes="310px" width="930" height="930" alt="Ilustrasi Ghea dan Vian memperlihatkan cincin lamaran" />
             <h2 class="names">{invitation.couple.second}<span>&amp;</span>{invitation.couple.first}</h2>
             <p class="greeting">{invitation.greeting}</p>
             <a class="text-link" href="#event">Simpan hari bahagia kami <span aria-hidden="true">↓</span></a>
@@ -50,7 +50,7 @@ import { invitation } from '../content/invitation';
           <div class="foreground" data-reveal>
             <p class="eyebrow">With love, always</p>
             <h2>{invitation.couple.firstShort} &amp; {invitation.couple.secondShort}</h2>
-            <img class="portrait bouquet" src={invitation.artwork.bouquet} width="330" height="478" alt="Ilustrasi Ghea membawa buket bunga bersama Vian" loading="lazy" />
+            <img class="portrait bouquet" src={invitation.artwork.bouquet} srcset={`${invitation.artwork.bouquetSmall} 580w, ${invitation.artwork.bouquet} 870w`} sizes="290px" width="870" height="1304" alt="Ilustrasi Ghea membawa buket bunga bersama Vian" loading="lazy" />
             <p class="see-you">See you there!</p>
             <p class="closing">Terima kasih untuk doa dan cinta Anda<br />di awal perjalanan kami.</p>
             <p class="eyebrow endnote">THE ENGAGEMENT · {invitation.event.dateStamp}</p>

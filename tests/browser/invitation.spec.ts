@@ -13,7 +13,7 @@ test('opens the invitation, safely greets the guest, and keeps unconnected forms
   await expect(page.locator('main')).toBeVisible();
   await expect(page.locator('main')).toBeFocused();
   await expect(page.locator('[data-music-player]')).toBeVisible();
-  await expect(page.locator('[data-music-toggle]')).toBeDisabled();
+  await expect(page.locator('[data-music-toggle]')).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Kirim konfirmasi' })).toHaveCount(0);
   await expect(page.locator('[data-rsvp-form]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Kirim ucapan' })).toBeDisabled();
@@ -43,14 +43,13 @@ test('essential content remains readable without JavaScript at 320px', async ({ 
 });
 
 test('requests music from the opening gesture and reports rejected playback', async ({ page }) => {
-  // Test the player wiring, not an absent soundtrack or the browser's real autoplay policy.
+  // Test the player wiring independently of the browser's real autoplay policy.
   await page.addInitScript(() => {
     HTMLMediaElement.prototype.play = function () {
       return Promise.reject(new DOMException('Blocked in test', 'NotAllowedError'));
     };
   });
   await page.goto('/');
-  await page.locator('audio').evaluate((audio) => audio.setAttribute('src', '/audio/test.mp3'));
   await page.getByRole('link', { name: 'Buka Undangan' }).click();
   await expect(page.locator('[data-music-status]')).toHaveText('Ketuk tombol untuk memutar musik.');
   await expect(page.locator('main')).toBeVisible();

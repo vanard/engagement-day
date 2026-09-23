@@ -1,4 +1,4 @@
-/** Future same-origin API contracts. Never return private invitation records publicly. */
+/** Same-origin API contracts. Never return private invitation records publicly. */
 export interface WishInput { token: string; name: string; message: string; idempotencyKey: string }
 export interface WishResult { saved: true; status: 'pending' }
 export interface PublicWish { id: string; name: string; message: string; createdAt: string }

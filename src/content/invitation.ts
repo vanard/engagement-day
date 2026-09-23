@@ -2,16 +2,21 @@ export interface InvitationContent {
   isPreview: boolean;
   couple: { first: string; second: string; firstShort: string; secondShort: string };
   greeting: string;
-  artwork: { engaged: string; bouquet: string };
+  artwork: { engaged: string; engagedSmall: string; bouquet: string; bouquetSmall: string };
   event: { dateStamp: string; dateLabel: string; timeLabel: string; startsAt: string | null; timeZone: string; venue: string; address: string; mapUrl: string | null };
   music: { src: string | null; title: string };
 }
 
 export const invitation: InvitationContent = {
   isPreview: true,
-  couple: { first: 'Vian Rasyid D', second: 'Ghea Citra M', firstShort: 'Vian', secondShort: 'Ghea' },
-  artwork: { engaged: '/images/couple-engaged.webp', bouquet: '/images/couple-bouquet.webp' },
-  greeting: 'Merupakan kebahagiaan bagi kami dan keluarga apabila Anda berkenan hadir dan memberikan doa restu untuk langkah pertama kami bersama.',
+  couple: { first: 'Ghea Citra M', second: 'Vian Rasyid D', firstShort: 'Ghea', secondShort: 'Vian' },
+  artwork: {
+    engaged: '/images/couple-engaged.webp',
+    engagedSmall: '/images/couple-engaged-small.webp',
+    bouquet: '/images/couple-bouquet.webp',
+    bouquetSmall: '/images/couple-bouquet-small.webp',
+  },
+  greeting: '',
   event: {
     dateStamp: '21 · 10 · 2026',
     dateLabel: 'Rabu, 21 Oktober 2026',
@@ -20,8 +25,7 @@ export const invitation: InvitationContent = {
     timeZone: 'Asia/Jakarta',
     venue: 'Roemah Langko',
     address: 'Alamat lengkap akan dibagikan di sini.',
-    mapUrl: null,
+    mapUrl: 'https://maps.app.goo.gl/PhT9fWTZyzfHF7ii7',
   },
-  // Put your licensed audio in public/audio/ and set src to '/audio/your-song.mp3'.
-  music: { src: null, title: 'Musik undangan' },
+  music: { src: '/audio/kisah-romantis-clip.mp3', title: 'Glenn Fredly — Kisah Romantis' },
 };
