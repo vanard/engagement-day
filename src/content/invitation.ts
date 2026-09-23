@@ -9,7 +9,7 @@ export interface InvitationContent {
 
 export const invitation: InvitationContent = {
   isPreview: true,
-  couple: { first: 'Ghea Citra M', second: 'Vian Rasyid D', firstShort: 'Ghea', secondShort: 'Vian' },
+  couple: { first: 'Ghea Citra', second: 'Vian Rasyid', firstShort: 'Ghea', secondShort: 'Vian' },
   artwork: {
     engaged: '/images/couple-engaged.webp',
     engagedSmall: '/images/couple-engaged-small.webp',
