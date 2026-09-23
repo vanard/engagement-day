@@ -54,3 +54,57 @@ test('requests music from the opening gesture and reports rejected playback', as
   await expect(page.locator('[data-music-status]')).toHaveText('Ketuk tombol untuk memutar musik.');
   await expect(page.locator('main')).toBeVisible();
 });
+
+test('resumes music on return but respects a manual pause', async ({ page }) => {
+  await page.addInitScript(() => {
+    const state = { paused: true, hidden: false, playCalls: 0 };
+    Object.defineProperty(window, '__musicState', { value: state });
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => state.hidden });
+    Object.defineProperty(HTMLMediaElement.prototype, 'paused', { configurable: true, get: () => state.paused });
+    HTMLMediaElement.prototype.play = function () {
+      state.paused = false;
+      state.playCalls++;
+      this.dispatchEvent(new Event('play'));
+      return Promise.resolve();
+    };
+    HTMLMediaElement.prototype.pause = function () {
+      if (state.paused) return;
+      state.paused = true;
+      this.dispatchEvent(new Event('pause'));
+    };
+  });
+  const setHidden = (hidden: boolean) => page.evaluate((value) => {
+    const state = (window as typeof window & { __musicState: { hidden: boolean } }).__musicState;
+    state.hidden = value;
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, hidden);
+  const playCalls = () => page.evaluate(() => (window as typeof window & { __musicState: { playCalls: number } }).__musicState.playCalls);
+
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Buka Undangan' }).click();
+  await expect(page.locator('[data-music-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  await setHidden(true);
+  await expect(page.locator('[data-music-toggle]')).toHaveAttribute('aria-pressed', 'false');
+  await setHidden(false);
+  await expect(page.locator('[data-music-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  expect(await playCalls()).toBe(2);
+
+  // Some browsers pause media before reporting that the page became hidden.
+  await page.locator('[data-audio]').evaluate((audio: HTMLAudioElement) => audio.pause());
+  await setHidden(true);
+  await setHidden(false);
+  await expect(page.locator('[data-music-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  expect(await playCalls()).toBe(3);
+
+  await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+  await expect(page.locator('[data-music-toggle]')).toHaveAttribute('aria-pressed', 'false');
+  await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+  await expect(page.locator('[data-music-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  expect(await playCalls()).toBe(4);
+
+  await page.locator('[data-music-toggle]').click();
+  await setHidden(true);
+  await setHidden(false);
+  await expect(page.locator('[data-music-toggle]')).toHaveAttribute('aria-pressed', 'false');
+  expect(await playCalls()).toBe(4);
+});

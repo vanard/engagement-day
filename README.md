@@ -2,7 +2,7 @@
 
 Personal engagement invitation based on the couple’s supplied video: burgundy
 envelope, ivory ribbon stationery, illustrated portraits, and a sage closing card.
-Built with scoped CSS, TypeScript, and a Supabase wishes foundation. This project is
+Built with scoped CSS, TypeScript, and Supabase-backed wishes. This project is
 independent of the wedding copy. RSVP and attendance collection are not included.
 The supplied full names are retained. The video supplies Saturday, 10 October 2026,
 16:00–finish, at Roemah Langko. Timezone and the exact address/map link still need
@@ -57,18 +57,17 @@ responsive sizes for sharp rendering on high-density screens; the full artwork i
 The envelope, lace border, ribbon frames, and table illustration are original CSS/SVG.
 Video audio is not bundled. Portrait asset paths are configured in the content file. Cormorant Garamond
 and Great Vibes are locally hosted through Fontsource (OFL-licensed font packages).
-There are no runtime Google Fonts requests. The visual direction follows the supplied engagement video. Music pauses when the tab is hidden and requires
-a tap to resume. Set `event.mapUrl` when a real venue link is available.
+There are no runtime Google Fonts requests. The visual direction follows the supplied engagement video. Music pauses when the tab is hidden and attempts to resume when the guest returns to the same page if it was playing before; browser playback rules may still require a tap. A manual pause remains paused. Set `event.mapUrl` when a real venue link is available.
 
 ## Wishes
 
-The section shows the latest three approved wishes once, then refreshes after a
-successful submission. Personal invitation links enable submissions; new wishes stay pending
-until the owner approves them. The server validates token hashes, limits each
+The section shows the latest three visible wishes and immediately adds a newly saved
+wish for the sender. Personal invitation links enable submissions; new wishes are
+visible by default, and the owner can hide them. The server validates token hashes, limits each
 invitation to three new wishes per hour, and deduplicates retries in Postgres.
 
-Follow [the wishes setup and owner guide](docs/wishes.md) to apply both migrations,
-configure server-only environment variables, issue private links, approve wishes
+Follow [the wishes setup and owner guide](docs/wishes.md) to apply the migrations,
+configure server-only environment variables, issue private links, hide unwanted wishes
 and export them. No real guest data or Supabase credentials are included.
 Astro dev/preview only serves the static page; use Vercel's runtime to run the API.
 Run `npm test` for API and embedded-Postgres checks. PGlite is a development-only

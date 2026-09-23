@@ -27,15 +27,16 @@ test('shows latest three wishes once and safely renders text without loading but
 test('keeps entered data and the retry key after failure, then confirms only a saved wish', async ({ page }) => {
   const submitted: Array<Record<string, string>> = [];
   let reads = 0;
+  const newWish = { ...wishes[0], id: 'new-approved', name: 'New approved guest' };
   await page.route('**/api/wishes**', async (route) => {
     if (route.request().method() === 'GET') {
       reads++;
-      return route.fulfill({ json: { items: reads === 1 ? wishes : [{ ...wishes[0], id: 'new-approved', name: 'New approved guest' }, ...wishes.slice(1)], nextCursor: 'older' } });
+      return route.fulfill({ json: { items: wishes, nextCursor: 'older' } });
     }
     submitted.push(route.request().postDataJSON());
     return route.fulfill(submitted.length === 1
       ? { status: 503, json: { error: { code: 'UNAVAILABLE', message: 'Silakan coba lagi.' } } }
-      : { json: { saved: true, status: 'pending' } });
+      : { json: { saved: true, status: 'approved', wish: newWish } });
   });
   await page.goto(`/?to=Display%20only#token=${token}`);
   await page.getByRole('link', { name: 'Buka Undangan' }).click();
@@ -48,13 +49,13 @@ test('keeps entered data and the retry key after failure, then confirms only a s
   expect(reads).toBe(1);
   await expect(page.getByRole('textbox', { name: 'Doa & ucapan', exact: true })).toHaveValue('Selamat!');
   await page.getByRole('button', { name: 'Kirim ucapan' }).click();
-  await expect(page.locator('[data-wishes-status]')).toContainText('sudah tersimpan');
+  await expect(page.locator('[data-wishes-status]')).toContainText('sudah tampil');
   expect(submitted[0].idempotencyKey).toBe(submitted[1].idempotencyKey);
   expect(submitted[0].token).toBe(token);
   await expect(page.getByRole('textbox', { name: 'Doa & ucapan', exact: true })).toHaveValue('');
   await expect(page.locator('[data-wishes-list] h4').first()).toHaveText('New approved guest');
   await expect(page.locator('[data-wishes-list] article')).toHaveCount(3);
-  expect(reads).toBe(2);
+  expect(reads).toBe(1);
 });
 
 test('shows a read error without blocking invitation content or adding a reload button', async ({ page }) => {

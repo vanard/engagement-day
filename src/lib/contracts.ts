@@ -1,7 +1,7 @@
 /** Same-origin API contracts. Never return private invitation records publicly. */
 export interface WishInput { token: string; name: string; message: string; idempotencyKey: string }
-export interface WishResult { saved: true; status: 'pending' }
 export interface PublicWish { id: string; name: string; message: string; createdAt: string }
+export type WishResult = { saved: true; status: 'approved'; wish: PublicWish } | { saved: true; status: 'hidden' }
 export interface WishesPage { items: PublicWish[]; nextCursor: string | null }
 export interface ApiError { error: { code: string; message: string } }
 

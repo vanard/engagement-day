@@ -1,4 +1,4 @@
-import type { ApiError, WishesPage, WishResult } from '../lib/contracts';
+import type { ApiError, PublicWish, WishesPage, WishResult } from '../lib/contracts';
 import { invitation } from '../content/invitation';
 
 export function initWishes() {
@@ -6,15 +6,16 @@ export function initWishes() {
   const form = document.querySelector<HTMLFormElement>('[data-wishes-form]');
   const fieldset = form?.querySelector('fieldset');
   const status = document.querySelector<HTMLElement>('[data-wishes-status]');
-  const note = document.querySelector<HTMLElement>('[data-wishes-note]');
   const list = document.querySelector<HTMLElement>('[data-wishes-list]');
   const listStatus = document.querySelector<HTMLElement>('[data-wishes-list-status]');
-  if (!section || !form || !fieldset || !status || !note || !list || !listStatus) return;
+  if (!section || !form || !fieldset || !status || !list || !listStatus) return;
   // Fragments are not sent to the server in page requests or access logs.
   const token = new URLSearchParams(location.hash.slice(1)).get('token') ?? '';
   const authorizedLink = /^[A-Za-z0-9_-]{43}$/.test(token);
   fieldset.disabled = !authorizedLink;
-  if (authorizedLink) note.textContent = 'Ucapan Anda akan ditampilkan setelah disetujui. Terima kasih atas doa baik Anda.';
+  status.textContent = authorizedLink
+    ? 'Ucapan Anda akan tampil setelah berhasil dikirim.'
+    : 'Buka tautan undangan pribadi Anda untuk mengirim ucapan.';
 
   let loadVersion = 0;
   async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -33,6 +34,19 @@ export function initWishes() {
       throw new Error('Tidak dapat terhubung. Periksa koneksi Anda lalu coba lagi.');
     } finally { window.clearTimeout(timer); }
   }
+  const createWishArticle = (wish: PublicWish) => {
+    const article = document.createElement('article');
+    article.dataset.wishId = wish.id;
+    const name = document.createElement('h4');
+    const message = document.createElement('p');
+    const date = document.createElement('time');
+    name.textContent = wish.name;
+    message.textContent = wish.message;
+    date.dateTime = wish.createdAt;
+    date.textContent = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeZone: invitation.event.timeZone }).format(new Date(wish.createdAt));
+    article.append(name, message, date);
+    return article;
+  };
   const load = async () => {
     const version = ++loadVersion;
     listStatus!.textContent = 'Memuat ucapan…';
@@ -41,18 +55,7 @@ export function initWishes() {
       if (version !== loadVersion) return;
       if (!Array.isArray(page.items)) throw new Error('Ucapan belum dapat dimuat. Silakan coba lagi.');
       const content = document.createDocumentFragment();
-      for (const wish of page.items.slice(0, 3)) {
-        const article = document.createElement('article');
-        const name = document.createElement('h4');
-        const message = document.createElement('p');
-        const date = document.createElement('time');
-        name.textContent = wish.name;
-        message.textContent = wish.message;
-        date.dateTime = wish.createdAt;
-        date.textContent = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeZone: invitation.event.timeZone }).format(new Date(wish.createdAt));
-        article.append(name, message, date);
-        content.append(article);
-      }
+      for (const wish of page.items.slice(0, 3)) content.append(createWishArticle(wish));
       list.replaceChildren(content);
       listStatus.textContent = page.items.length ? '' : 'Belum ada ucapan yang ditampilkan. Jadilah yang pertama menitipkan doa.';
     } catch (error) {
@@ -84,10 +87,18 @@ export function initWishes() {
     try {
       const result = await request<WishResult>('/api/wishes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, name, message, idempotencyKey: attempt.idempotencyKey }) });
       if (result.saved !== true) throw new Error('Ucapan belum tersimpan. Silakan coba lagi.');
-      status.textContent = 'Terima kasih! Ucapan Anda sudah tersimpan dan menunggu persetujuan.';
+      if (result.status === 'approved') {
+        ++loadVersion;
+        for (const article of list.children) if ((article as HTMLElement).dataset.wishId === result.wish.id) { article.remove(); break; }
+        list.prepend(createWishArticle(result.wish));
+        while (list.children.length > 3) list.lastElementChild?.remove();
+        listStatus.textContent = '';
+        status.textContent = 'Terima kasih! Ucapan Anda sudah tampil.';
+      } else if (result.status === 'hidden') {
+        status.textContent = 'Ucapan ini tersimpan, tetapi tidak ditampilkan.';
+      } else throw new Error('Ucapan belum dapat ditampilkan. Silakan coba lagi.');
       form.reset();
       attempt = undefined;
-      void load();
     } catch (error) { status.textContent = (error as Error).message; }
     finally { pending = false; fieldset.disabled = false; }
   });

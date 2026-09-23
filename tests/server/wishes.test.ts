@@ -45,37 +45,58 @@ test('server hashes tokens, maps failures, and never caches private responses', 
       const body = JSON.parse(String(options?.body));
       assert.equal(body.p_token_hash, tokenHash);
       assert.ok(!String(options?.body).includes(token));
-      return Response.json({ outcome });
+      return Response.json(outcome === 'saved' ? { outcome, approved: true, wish: {
+        id: randomUUID(), name: 'Guest', message: 'Selamat!', createdAt: '2026-09-23T12:00:00Z', token_hash: 'PRIVATE',
+      } } : { outcome });
     });
     const response = await api.POST(post(input));
     assert.equal(response.status, expected);
     assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    if (outcome === 'saved') {
+      const result = await response.json();
+      assert.equal(result.status, 'approved');
+      assert.ok(!JSON.stringify(result).includes('PRIVATE'));
+    }
     if (expected === 429) assert.equal(response.headers.get('Retry-After'), '3600');
   }
+  const hidden = createWishesHandlers(config, async () => Response.json({ outcome: 'saved', approved: false }));
+  assert.deepEqual(await (await hidden.POST(post(input))).json(), { saved: true, status: 'hidden' });
   const api = createWishesHandlers(() => ({}));
   assert.equal((await api.POST(post(input))).status, 503);
   assert.equal((await api.GET(new Request('https://invitation.test/api/wishes'))).status, 503);
 });
 
-test('database migration enforces authorization, moderation, retries, quotas and role separation', async () => {
+test('database migrations auto-publish new wishes, allow manual hiding, and enforce retries, quotas and role separation', async () => {
   const db = new PGlite();
   try {
     await db.exec('create role anon; create role authenticated; create role service_role bypassrls;');
     for (const name of ['0001_invitation.sql', '0002_wish_submission.sql']) await db.exec(await readFile(new URL(`../../supabase/migrations/${name}`, import.meta.url), 'utf8'));
     await db.query('insert into public.invitation_parties(display_name, token_hash) values ($1,$2)', ['Synthetic Guest', tokenHash]);
-    const submit = async (hash: string, key: string, name = 'Guest', message = 'Hello') => {
-      const result = await db.query<{ result: { outcome: string } }>('select public.submit_wish($1,$2,$3,$4) as result', [hash, key, name, message]);
-      return result.rows[0].result.outcome;
+    const olderKey = randomUUID();
+    await db.query("insert into public.wishes(party_id, idempotency_key, name, message, created_at) select id, $1, 'Older wish', 'Hello', now() - interval '2 hours' from public.invitation_parties where token_hash = $2", [olderKey, tokenHash]);
+    await db.exec(await readFile(new URL('../../supabase/migrations/0003_auto_publish_wishes.sql', import.meta.url), 'utf8'));
+    assert.equal((await db.query<{ approved: boolean }>('select approved from public.wishes where idempotency_key = $1', [olderKey])).rows[0].approved, false);
+    await db.query('delete from public.wishes where idempotency_key = $1', [olderKey]);
+    const submitResult = async (hash: string, key: string, name = 'Guest', message = 'Hello') => {
+      const result = await db.query<{ result: { outcome: string; approved?: boolean; wish?: { id: string } } }>('select public.submit_wish($1,$2,$3,$4) as result', [hash, key, name, message]);
+      return result.rows[0].result;
     };
+    const submit = async (hash: string, key: string, name = 'Guest', message = 'Hello') => (await submitResult(hash, key, name, message)).outcome;
     assert.equal(await submit('0'.repeat(64), randomUUID()), 'invalid_token');
     assert.equal(await submit(tokenHash, randomUUID(), ' '), 'invalid_input');
     const key = randomUUID();
-    assert.equal(await submit(tokenHash, key), 'saved');
+    const first = await submitResult(tokenHash, key);
+    assert.equal(first.outcome, 'saved');
+    assert.equal(first.approved, true);
+    assert.ok(first.wish?.id);
     assert.equal(await submit(tokenHash, key), 'saved');
     assert.equal(await submit(tokenHash, key, 'Changed'), 'conflict');
     const rows = await db.query<{ approved: boolean }>('select approved from public.wishes');
     assert.equal(rows.rows.length, 1);
-    assert.equal(rows.rows[0].approved, false);
+    assert.equal(rows.rows[0].approved, true);
+    await db.query('update public.wishes set approved = false where idempotency_key = $1', [key]);
+    assert.equal((await submitResult(tokenHash, key)).approved, false);
+    assert.equal((await db.query<{ count: number }>('select count(*)::int as count from public.wishes where approved = true')).rows[0].count, 0);
     assert.equal(await submit(tokenHash, randomUUID()), 'saved');
     assert.equal(await submit(tokenHash, randomUUID()), 'saved');
     assert.equal(await submit(tokenHash, randomUUID()), 'rate_limited');

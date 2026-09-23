@@ -97,12 +97,15 @@ export function createWishesHandlers(config: () => { url?: string; key?: string 
         const result = await database('rpc/submit_wish', { method: 'POST', body: JSON.stringify({
           p_token_hash: createHash('sha256').update(input.token).digest('hex'),
           p_key: input.idempotencyKey, p_name: input.name, p_message: input.message,
-        }) }) as { outcome: string };
+        }) }) as { outcome: string; approved?: boolean; wish?: Partial<PublicWish> };
         if (result.outcome === 'invalid_token') throw new ApiFailure(401, 'INVALID_TOKEN', 'Tautan undangan tidak valid. Hubungi pasangan untuk tautan pribadi Anda.');
         if (result.outcome === 'rate_limited') throw new ApiFailure(429, 'RATE_LIMITED', 'Batas pengiriman tercapai. Silakan coba lagi dalam satu jam.');
         if (result.outcome === 'conflict') throw new ApiFailure(409, 'RETRY_CONFLICT', 'Percobaan sebelumnya sudah tersimpan dengan isi berbeda. Muat ulang halaman sebelum menulis ucapan baru.');
         if (result.outcome !== 'saved') throw new Error('Unexpected save result');
-        return reply({ saved: true, status: 'pending' });
+        if (result.approved === false) return reply({ saved: true, status: 'hidden' });
+        const wish = result.wish;
+        if (result.approved !== true || !wish || typeof wish.id !== 'string' || typeof wish.name !== 'string' || typeof wish.message !== 'string' || typeof wish.createdAt !== 'string') throw new Error('Invalid save result');
+        return reply({ saved: true, status: 'approved', wish: { id: wish.id, name: wish.name, message: wish.message, createdAt: wish.createdAt } });
       } catch (error) { return failure(error); }
     },
   };

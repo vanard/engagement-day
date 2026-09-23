@@ -1,16 +1,17 @@
 # Wishes setup and owner operations
 
-The page loads the latest **three approved wishes** when the section approaches
-the viewport, then refreshes after a successful submission. There are no older-message
-or reload buttons and no polling. Refreshes replace the three cards instead of appending.
-New wishes wait for approval. There is no attendance collection.
+The page loads the latest **three visible wishes** when the section approaches
+the viewport. A successfully saved wish appears immediately for its sender.
+There are no older-message or reload buttons and no polling. New wishes are
+visible by default; the owner can hide them. There is no attendance collection.
 
 ## Connect the backend
 
 1. Create separate Supabase projects for preview/test and production.
-2. Apply `supabase/migrations/0001_invitation.sql` to a fresh database, followed by
-   `0002_wish_submission.sql`, using the Supabase SQL editor. If the foundation
-   migration was already applied, run only migration 0002.
+2. Apply `supabase/migrations/0001_invitation.sql`, then
+   `0002_wish_submission.sql`, then `0003_auto_publish_wishes.sql` to a fresh
+   database using the Supabase SQL editor. On an existing database, run only
+   migrations not already applied; the new visibility policy needs migration 0003.
 3. Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` as server-only Vercel environment
    variables. Use a Supabase secret key or legacy service-role key, never an anon
    key. Set the preview values to the test project and production values to the
@@ -18,8 +19,8 @@ New wishes wait for approval. There is no attendance collection.
 4. Vercel deploys `api/wishes.ts` separately from the static Astro site. Astro's
    dev/preview commands do not run this endpoint. Use Vercel's local runtime or a
    designated preview deployment for a real end-to-end integration check.
-5. Test a private link, pending submission, approval, latest-three ordering,
-   refresh after submission, retries, invalid token, and database failure before launch.
+5. Test a private link, immediate publication, manual hiding, latest-three ordering,
+   display after submission, retries, invalid token, and database failure before launch.
    Missing configuration returns a recoverable 503; invitation details still render.
 
 ## Create a personal link
@@ -42,13 +43,15 @@ section URL and reloading, reopen the original personal link to send a wish.
 Revoke a link by replacing its stored hash with a newly generated token hash.
 Keep the private link file out of shared folders, screenshots, logs and Git.
 
-## Approve and export
+## Hide and export
 
-In Supabase's Table Editor, open `wishes`, filter `approved = false`, review the
-name/message and set `approved = true` for messages you want published. Leave
-unwanted messages unapproved. Do not delete recent submissions to moderate them:
-the recent rows also enforce submission quotas and preserve retry history.
-Public cache refresh can take up to about three minutes; clients don't poll.
+In Supabase's Table Editor, open `wishes`, review the name/message, and set
+`approved = false` for any wish you want to hide. Set it back to `true` to show
+it again. Do not delete recent submissions: those rows also enforce submission
+quotas and preserve retry history. Migration 0003 leaves older hidden or pending
+wishes hidden because the old schema cannot distinguish those cases; review them
+manually before showing them. The sender sees a new saved wish immediately, while
+other visitors may see a cached list for up to about three minutes.
 
 Export wishes from the SQL editor using this query and its CSV download action:
 
@@ -72,12 +75,12 @@ without penalizing families on the same network. Idempotent retries remain
 successful after reaching the limit; reused keys with changed content get 409.
 Browser failures keep text and the submission key for retries on the current
 page. Reloading closes that retry session, so retry in place after network errors.
-All POST responses and errors are `no-store`; only approved public GET responses
+All POST responses and errors are `no-store`; only visible public GET responses
 are cached. The API default page size is three and its maximum is 50.
 
-`npm test` tests API authorization/validation and runs both migrations against
-PGlite (embedded Postgres used only for development tests). It checks pending
-moderation, duplicate retries, quotas, and denied browser-role access.
+`npm test` tests API authorization/validation and runs all migrations against
+PGlite (embedded Postgres used only for development tests). It checks visibility,
+manual hiding, duplicate retries, quotas, and denied browser-role access.
 `npm run build && npx playwright test` checks the UI using synthetic API responses.
 These do not verify Vercel routing, real Supabase connectivity, multiple database
 connections, or the 100-concurrent-visitor launch scenario. Run those in a
@@ -87,13 +90,12 @@ challenge if the launch abuse review calls for one. No third-party challenge is
 loaded by default.
 
 Local verification on 23 September 2026: type checks and the production build
-passed; four server/database tests and six wishes browser checks passed, alongside
-the eight existing invitation browser checks. Database tests use synthetic data
-in PGlite; browser tests stub the API. Static build files total about 1.01 MB
-(gzip for text, including the optional music and both portrait variants); the
-JavaScript bundle is about 2.54 KB gzipped. This artifact estimate is not a
-network measurement or a Core Web Vitals result. No live database migration,
-deployment, physical-device check or concurrency load test was performed.
+passed; five server/database tests and eighteen browser checks passed. Database
+tests use synthetic data in PGlite; browser tests stub the API. The earlier
+static build estimate was about 1.01 MB (gzip for text, including optional music
+and both portrait variants); this is not a network measurement or a Core Web
+Vitals result. Migration 0003 and the new behavior have not been deployed or
+checked on physical devices or under concurrent traffic.
 
 Implementation references: [Vercel Node handlers](https://vercel.com/docs/functions/runtimes/node-js),
 [Supabase database function permissions](https://supabase.com/docs/guides/database/functions),

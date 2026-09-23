@@ -5,8 +5,7 @@
       <h2 id="wishes-heading">Doa &amp; ucapan</h2>
       <p class="intro">Sepatah doa, sejuta makna.<br />Titipkan harapan baik untuk awal perjalanan kami.</p>
     </header>
-    <form aria-describedby="wishes-note" data-wishes-form>
-      <p id="wishes-note" class="notice" data-wishes-note>Gunakan tautan undangan pribadi Anda untuk mengirim ucapan. Ucapan ditampilkan setelah disetujui.</p>
+    <form aria-describedby="wishes-status" data-wishes-form>
       <noscript><p>Aktifkan JavaScript untuk membaca dan mengirim ucapan.</p></noscript>
       <fieldset disabled>
         <legend class="sr-only">Tulis doa dan ucapan</legend>
@@ -14,7 +13,7 @@
         <div class="field"><label for="wish-message">Doa &amp; ucapan</label><textarea id="wish-message" name="message" rows="4" maxlength="1000" placeholder="Tuliskan harapan baik Anda di sini…" required></textarea></div>
         <button class="button" type="submit">Kirim ucapan <span aria-hidden="true">↗</span></button>
       </fieldset>
-      <p class="status" role="status" data-wishes-status></p>
+      <p id="wishes-status" class="status" role="status" data-wishes-status></p>
     </form>
     <h3 class="latest-heading">Ucapan terbaru</h3>
     <p class="list-status" role="status" data-wishes-list-status>Ruang kecil untuk doa-doa yang indah.</p>
