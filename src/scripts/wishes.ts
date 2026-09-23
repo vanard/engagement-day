@@ -13,9 +13,9 @@ export function initWishes() {
   const token = new URLSearchParams(location.hash.slice(1)).get('token') ?? '';
   const authorizedLink = /^[A-Za-z0-9_-]{43}$/.test(token);
   fieldset.disabled = !authorizedLink;
-  status.textContent = authorizedLink
-    ? 'Ucapan Anda akan tampil setelah berhasil dikirim.'
-    : 'Buka tautan undangan pribadi Anda untuk mengirim ucapan.';
+  // status.textContent = authorizedLink
+  //   ? 'Ucapan Anda akan tampil setelah berhasil dikirim.'
+  //   : 'Buka tautan undangan pribadi Anda untuk mengirim ucapan.';
 
   let loadVersion = 0;
   async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
