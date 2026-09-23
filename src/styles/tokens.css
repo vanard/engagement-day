@@ -1,0 +1,12 @@
+:root {
+  --paper: #fffdf7;
+  --surface: #ede5dd;
+  --ink: #512b32;
+  --forest: #772b40;
+  --muted: #796368;
+  --accent: #8b694c;
+  --line: #d9c3b7;
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-script: 'Great Vibes', 'Brush Script MT', cursive;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}

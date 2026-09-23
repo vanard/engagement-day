@@ -1,0 +1,27 @@
+---
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+---
+<div class:list={['garden-art', { compact }]} aria-hidden="true">
+  <div class="wash"></div>
+  <svg class="marbling" viewBox="0 0 600 800" preserveAspectRatio="none" focusable="false">
+    <g fill="none" stroke="#a9bf92" stroke-width=".8" opacity=".22">
+      <path d="M-10 240C130 125 102 355 259 292S442 368 600 209M-10 248C129 140 99 366 260 301S448 379 605 218" />
+      <path d="M-20 480C99 429 184 577 248 451S469 483 620 390M-20 484C100 440 189 585 255 461S469 490 620 399" />
+      <path d="M80 160C239 259 49 421 192 546S276 645 210 750M90 158C247 257 56 415 200 538S291 645 220 750" />
+    </g>
+    <g fill="#b3a165" opacity=".4"><circle cx="98" cy="335" r="1.5"/><circle cx="473" cy="542" r="2"/><circle cx="140" cy="547" r="1"/><circle cx="398" cy="294" r="2"/><circle cx="440" cy="340" r="1.5"/><circle cx="180" cy="693" r="1.5"/><circle cx="311" cy="220" r="1"/></g>
+  </svg>
+  <img class="branch top" src="/images/eucalyptus.svg" width="360" height="440" alt="" />
+  <img class="branch bottom" src="/images/eucalyptus.svg" width="360" height="440" alt="" loading="lazy" />
+</div>
+<style>
+  .garden-art { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .wash { position: absolute; inset: 10% -10%; opacity: .68; background: radial-gradient(ellipse at 62% 49%, #cfdeb959 0, #dce8c677 22%, transparent 53%), radial-gradient(ellipse at 31% 36%, #d3e3bd99, transparent 34%), radial-gradient(ellipse at 29% 70%, #bbd4a155, transparent 38%), radial-gradient(ellipse at 75% 64%, #b9d69a66, transparent 33%); filter: blur(10px); }
+  .marbling { position: absolute; inset: 0; height: 100%; width: 100%; }
+  .branch { position: absolute; width: 40%; height: auto; max-width: 300px; }
+  .top { right: -5%; top: -10%; }
+  .bottom { left: -7%; bottom: -10%; transform: rotate(180deg); }
+  .compact .branch { width: 30%; opacity: .75; }
+  .compact .wash { opacity: .4; }
+</style>

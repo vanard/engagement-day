@@ -1,0 +1,16 @@
+---
+import { invitation } from '../content/invitation';
+---
+<aside class="music" aria-label="Musik undangan" hidden data-music-player>
+  <audio data-audio loop preload="none" src={invitation.music.src ?? undefined}></audio>
+  <button type="button" data-music-toggle aria-label="Putar musik" aria-pressed="false" disabled={!invitation.music.src}>
+    <span aria-hidden="true">♫</span><span data-music-label>Putar musik</span>
+  </button>
+  <p data-music-status role="status">{invitation.music.src ? '' : 'Musik belum tersedia.'}</p>
+</aside>
+<style>
+  .music { position: fixed; right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 5; max-width: min(270px, calc(100vw - 2rem)); }
+  button { display: flex; align-items: center; gap: .6rem; border: 1px solid var(--line); border-radius: 30px; background: var(--paper); color: var(--ink); padding: .6rem 1rem; box-shadow: 0 3px 20px #283c3515; font-size: .8rem; }
+  p { margin: .25rem 0 0; font-size: .7rem; background: var(--paper); border-radius: 3px; padding-inline: .5rem; }
+  p:empty { display: none; }
+</style>

@@ -1,0 +1,39 @@
+---
+import { invitation } from '../content/invitation';
+---
+<header class="cover" id="cover">
+  <div class="cover-meta"><span>A LETTER FOR YOU</span><span>{invitation.event.dateStamp}</span></div>
+  <div class="paper">
+    <div class="cover-content">
+      <p class="eyebrow">The engagement of</p>
+      <p class="couple-names">{invitation.couple.first}<span>&amp;</span>{invitation.couple.second}</p>
+      <div class="envelope" aria-hidden="true"><div class="flap"></div><div class="letter">You're<br /><span>Invited</span><i>♡</i></div><span class="sparkle">✧</span></div>
+      <h1>A little letter,<br /><span>a lovely beginning.</span></h1>
+      <p class="date">{invitation.event.dateLabel}</p>
+      <div class="recipient"><p>Kepada Bapak/Ibu/Saudara/i</p><strong data-guest-name>Tamu Undangan</strong></div>
+      <a class="button" href="#invitation" data-open-invitation><svg width="18" height="16" viewBox="0 0 24 20" fill="none" stroke="currentColor" aria-hidden="true"><rect x="1" y="1" width="22" height="18" rx="1"/><path d="m1 2 11 9L23 2"/></svg>Buka Undangan</a>
+      <p class="footnote">Dikirim dengan cinta, untuk Anda.</p>
+    </div>
+  </div>
+</header>
+<style>
+.cover { min-height:100vh; min-height:100svh; padding:1.5rem max(1rem, env(safe-area-inset-right)); background:#652a3c; color:#f7ead8; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.cover-meta { display:flex; justify-content:space-between; width:min(100%,560px); font-size:.58rem; letter-spacing:.2em; margin-bottom:1rem; }
+.paper { width:min(100%,560px); position:relative; border:12px solid transparent; border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M0 15Q0 0 15 0T30 15Q30 30 15 30T0 15Z' fill='%23f0dec6'/%3E%3Ccircle cx='15' cy='8' r='2' fill='%23652a3c'/%3E%3Ccircle cx='8' cy='17' r='2' fill='%23652a3c'/%3E%3Ccircle cx='22' cy='17' r='2' fill='%23652a3c'/%3E%3C/svg%3E") 10 round; box-shadow:0 22px 75px #24091640; }
+.cover-content { text-align:center; border:1px solid #e9d5b581; padding:2.5rem 1.25rem 1.5rem; background:radial-gradient(ellipse at top,#97506644,transparent 70%); }
+.eyebrow { margin-bottom:.8rem; }
+.couple-names { font-family:var(--font-display); font-size:clamp(1.3rem,4vw,1.7rem); line-height:1.3; }
+.couple-names span { display:inline-block; font-family:var(--font-script); margin:0 .5rem; }
+.envelope { width:220px; height:145px; margin:3.5rem auto 2.4rem; position:relative; transform:rotate(-9deg); background:linear-gradient(145deg,#a2425d,#740c2e 65%); box-shadow:0 14px 25px #29041755; border-radius:3px; }
+.flap { position:absolute; inset:0; background:linear-gradient(#9a2247,#640d29); clip-path:polygon(0 0,100% 0,50% 65%); filter:drop-shadow(0 3px 3px #300); }
+.letter { position:absolute; background:#f6ead2; color:#4d292c; border:4px double #b2947d; outline:5px dotted #f6ead2; bottom:-12px; right:-4px; width:143px; padding:12px; font:2rem/1.1 var(--font-script); transform:rotate(14deg); box-shadow:0 5px 15px #3003; }
+.letter i { position:absolute; right:10px; bottom:8px; font:1rem var(--font-display); }
+.sparkle { position:absolute; left:-17px; top:47px; font-size:3.5rem; color:#e4c992; }
+h1 { font-family:var(--font-script); font-size:2.7rem; line-height:1.15; margin:0 0 1rem; } h1 span { font-size:.8em; }
+.date { font-family:var(--font-display); font-size:1.15rem; }
+.recipient { margin:1.4rem 0 1.2rem; }.recipient p { font-size:.67rem; margin-bottom:.2rem; }.recipient strong { font-family:var(--font-display); font-size:1.45rem; font-weight:400; overflow-wrap:anywhere; }
+.button { background:#f1e4cf; color:#652a3c; border-color:#f1e4cf; }.button:hover { background:#ddc6a8; }
+.footnote { font-family:var(--font-display); font-style:italic; font-size:.9rem; margin:1rem 0 0; }
+@media(min-width:700px) { .cover { padding-block:2.5rem; }.cover-content { padding:2.7rem 2rem 2rem; } }
+@media(max-width:380px) { .couple-names span { display:block; }.envelope { width:190px; }.cover-content { padding-inline:1rem; } }
+</style>
