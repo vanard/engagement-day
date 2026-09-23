@@ -1,4 +1,5 @@
-import { createWishesHandlers } from '../src/server/wishes.ts';
+// Vercel emits JavaScript; runtime imports must point to the emitted extension.
+import { createWishesHandlers } from '../src/server/wishes.js';
 
 const handlers = createWishesHandlers(() => ({
   url: process.env.SUPABASE_URL,

@@ -3,6 +3,12 @@ import { test, expect } from '@playwright/test';
 const token = 'a'.repeat(43); // Synthetic, never an issued invitation.
 const wishes = Array.from({ length: 3 }, (_, i) => ({ id: `wish-${i}`, name: i ? `Guest ${i}` : '<img src=x onerror=alert(1)>', message: 'Semoga bahagia selalu!', createdAt: '2026-09-23T12:00:00Z' }));
 
+test('reports non-JSON hosting errors as a service failure instead of a connection failure', async ({ page }) => {
+  await page.route('**/api/wishes?*', (route) => route.fulfill({ status: 500, contentType: 'text/plain', body: 'FUNCTION_INVOCATION_FAILED' }));
+  await page.goto('/#wishes');
+  await expect(page.locator('[data-wishes-list-status]')).toHaveText('Layanan ucapan sedang tidak tersedia. Silakan coba lagi nanti.');
+});
+
 test('shows latest three wishes once and safely renders text without loading buttons', async ({ page }) => {
   let reads = 0;
   await page.route('**/api/wishes?*', (route) => {

@@ -22,6 +22,9 @@ export function initWishes() {
     const timer = window.setTimeout(() => abort.abort(), 12000);
     try {
       const response = await fetch(url, { ...options, signal: abort.signal });
+      if (!response.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('Layanan ucapan sedang tidak tersedia. Silakan coba lagi nanti.');
+      }
       const body = await response.json() as T & ApiError;
       if (!response.ok) throw new Error(body.error?.message ?? 'Terjadi kendala. Silakan coba lagi.');
       return body;
