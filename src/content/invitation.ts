@@ -1,6 +1,6 @@
 export interface InvitationContent {
   isPreview: boolean;
-  couple: { first: string; second: string; firstShort: string; secondShort: string };
+  couple: { groom: string; bride: string };
   greeting: string;
   artwork: { engaged: string; engagedSmall: string; bouquet: string; bouquetSmall: string };
   event: { dateStamp: string; dateLabel: string; timeLabel: string; startsAt: string | null; timeZone: string; venue: string; address: string; mapUrl: string | null };
@@ -9,7 +9,7 @@ export interface InvitationContent {
 
 export const invitation: InvitationContent = {
   isPreview: true,
-  couple: { first: 'Ghea Citra', second: 'Vian Rasyid', firstShort: 'Ghea', secondShort: 'Vian' },
+  couple: { groom: 'Vian', bride: 'Ghea' },
   artwork: {
     engaged: '/images/couple-engaged.webp',
     engagedSmall: '/images/couple-engaged-small.webp',
