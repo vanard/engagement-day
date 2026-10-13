@@ -1,6 +1,6 @@
 export interface InvitationContent {
   isPreview: boolean;
-  couple: { groom: string; bride: string };
+  couple: { bride: string; groom: string };
   greeting: string;
   artwork: { engaged: string; engagedSmall: string; bouquet: string; bouquetSmall: string };
   /** Link preview for WhatsApp/Instagram/Facebook. The image is 1200x630 JPEG. */
@@ -11,7 +11,8 @@ export interface InvitationContent {
 
 export const invitation: InvitationContent = {
   isPreview: true,
-  couple: { groom: 'Vian', bride: 'Ghea' },
+  // Engagement order is bride first (Ghea & Vian); the wedding project uses groom first.
+  couple: { bride: 'Ghea', groom: 'Vian' },
   artwork: {
     engaged: '/images/couple-engaged.webp',
     engagedSmall: '/images/couple-engaged-small.webp',
@@ -19,10 +20,10 @@ export const invitation: InvitationContent = {
     bouquetSmall: '/images/couple-bouquet-small.webp',
   },
   share: {
-    title: 'Lamaran Vian & Ghea',
+    title: 'Lamaran Ghea & Vian',
     description: 'Dengan penuh syukur, kami mengundang Anda untuk berbagi kebahagiaan di hari lamaran kami.',
     image: '/images/og-engaged.jpg',
-    imageAlt: 'Ilustrasi Vian dan Ghea memperlihatkan cincin lamaran',
+    imageAlt: 'Ilustrasi Ghea dan Vian memperlihatkan cincin lamaran',
   },
   greeting: '',
   event: {

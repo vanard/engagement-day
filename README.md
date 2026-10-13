@@ -4,7 +4,7 @@ Personal engagement invitation based on the couple’s supplied video: burgundy
 envelope, ivory ribbon stationery, illustrated portraits, and a sage closing card.
 Built with scoped CSS, TypeScript, and Supabase-backed wishes. This project is
 independent of the wedding copy. RSVP and attendance collection are not included.
-The couple appear by short names only, Vian & Ghea. The video supplies Saturday, 10 October 2026,
+The couple appear by short names only, bride first for the engagement: Ghea & Vian. The video supplies Saturday, 10 October 2026,
 16:00–finish, at Roemah Langko. Timezone and the exact address/map link still need
 confirmation; `startsAt` remains null until the timezone is confirmed.
 

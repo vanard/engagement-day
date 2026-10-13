@@ -7,12 +7,12 @@ import RibbonFrame from '../components/RibbonFrame.astro';
 import TableIllustration from '../components/TableIllustration.astro';
 import { invitation } from '../content/invitation';
 ---
-<InvitationLayout title={`Lamaran ${invitation.couple.groom} & ${invitation.couple.bride}`}>
+<InvitationLayout title={`Lamaran ${invitation.couple.bride} & ${invitation.couple.groom}`}>
   <IntroCover />
   <main id="invitation" tabindex="-1">
-    <aside class="desktop-note" aria-hidden="true"><p class="eyebrow">A celebration of love</p><p class="side-names">{invitation.couple.groom} <span>&amp;</span> {invitation.couple.bride}</p><div class="fine-rule"></div><p class="side-date">{invitation.event.dateStamp}</p><p class="side-message">A new chapter,<br />with our favourite people.</p><span class="side-heart">♡</span></aside>
+    <aside class="desktop-note" aria-hidden="true"><p class="eyebrow">A celebration of love</p><p class="side-names">{invitation.couple.bride} <span>&amp;</span> {invitation.couple.groom}</p><div class="fine-rule"></div><p class="side-date">{invitation.event.dateStamp}</p><p class="side-message">A new chapter,<br />with our favourite people.</p><span class="side-heart">♡</span></aside>
     <div class="reading-column">
-      <nav aria-label="Navigasi undangan"><a href="#welcome" class="monogram" aria-label="Pembuka">{invitation.couple.groom.charAt(0)} <em>&amp;</em> {invitation.couple.bride.charAt(0)}</a><div><a href="#event">Acara</a><a href="#wishes">Doa &amp; ucapan</a></div></nav>
+      <nav aria-label="Navigasi undangan"><a href="#welcome" class="monogram" aria-label="Pembuka">{invitation.couple.bride.charAt(0)} <em>&amp;</em> {invitation.couple.groom.charAt(0)}</a><div><a href="#event">Acara</a><a href="#wishes">Doa &amp; ucapan</a></div></nav>
       <div class="invitation-paper">
         <section id="welcome" class="welcome section center">
           <RibbonFrame />
@@ -21,10 +21,10 @@ import { invitation } from '../content/invitation';
             <h1>We're Engaged</h1>
             <p class="introduction">Come celebrate love<br />and a brand new chapter with us.</p>
             <div class="portrait-frame">
-              <img class="portrait engaged" src={invitation.artwork.engaged} srcset={`${invitation.artwork.engagedSmall} 620w, ${invitation.artwork.engaged} 930w`} sizes="310px" width="930" height="930" alt="Ilustrasi Vian dan Ghea memperlihatkan cincin lamaran" />
+              <img class="portrait engaged" src={invitation.artwork.engaged} srcset={`${invitation.artwork.engagedSmall} 620w, ${invitation.artwork.engaged} 930w`} sizes="310px" width="930" height="930" alt="Ilustrasi Ghea dan Vian memperlihatkan cincin lamaran" />
               <img class="lilies" src="/images/pink-lilies.svg" width="240" height="200" alt="" />
             </div>
-            <h2 class="names">{invitation.couple.groom}<span>&amp;</span>{invitation.couple.bride}</h2>
+            <h2 class="names">{invitation.couple.bride}<span>&amp;</span>{invitation.couple.groom}</h2>
             <p class="greeting">{invitation.greeting}</p>
             <a class="text-link" href="#event">Simpan hari bahagia kami <span aria-hidden="true">↓</span></a>
           </div>
@@ -52,8 +52,8 @@ import { invitation } from '../content/invitation';
           <RibbonFrame sage />
           <div class="foreground" data-reveal>
             <p class="eyebrow">With love, always</p>
-            <h2><span class="starred">{invitation.couple.groom} &amp; {invitation.couple.bride}<span class="stars top" aria-hidden="true"><i>✧</i><i>✦</i><i>✧</i></span></span></h2>
-            <img class="portrait bouquet" src={invitation.artwork.bouquet} srcset={`${invitation.artwork.bouquetSmall} 580w, ${invitation.artwork.bouquet} 870w`} sizes="290px" width="870" height="1304" alt="Ilustrasi Vian bersama Ghea yang membawa buket bunga" loading="lazy" />
+            <h2><span class="starred">{invitation.couple.bride} &amp; {invitation.couple.groom}<span class="stars top" aria-hidden="true"><i>✧</i><i>✦</i><i>✧</i></span></span></h2>
+            <img class="portrait bouquet" src={invitation.artwork.bouquet} srcset={`${invitation.artwork.bouquetSmall} 580w, ${invitation.artwork.bouquet} 870w`} sizes="290px" width="870" height="1304" alt="Ilustrasi Ghea membawa buket bunga bersama Vian" loading="lazy" />
             <p class="see-you"><span class="starred">See you there!<span class="stars bottom" aria-hidden="true"><i>✧</i><i>✦</i><i>✧</i></span></span></p>
             <p class="closing">Terima kasih untuk doa dan cinta Anda<br />di awal perjalanan kami.</p>
             <p class="eyebrow endnote">THE ENGAGEMENT · {invitation.event.dateStamp}</p>
