@@ -7,7 +7,7 @@ import { invitation } from '../content/invitation';
     <div class="cover-content">
       <p class="eyebrow">The engagement of</p>
       <p class="couple-names">{invitation.couple.groom}<span>&amp;</span>{invitation.couple.bride}</p>
-      <div class="envelope" aria-hidden="true"><div class="flap"></div><div class="letter">You're<br /><span>Invited</span><i>♡</i></div><span class="sparkle">✧</span></div>
+      <div class="envelope" aria-hidden="true"><div class="flap"></div><div class="letter">You're<br /><span>Invited</span><i>♡</i></div><span class="sparkle">✧</span><span class="sparkle small">✦</span><span class="sparkle tiny">✦</span></div>
       <h1>A little letter,<br /><span>a lovely beginning.</span></h1>
       <p class="date">{invitation.event.dateLabel}</p>
       <div class="recipient"><p>Kepada Bapak/Ibu/Saudara/i</p><strong data-guest-name>Tamu Undangan</strong></div>
@@ -28,12 +28,23 @@ import { invitation } from '../content/invitation';
 .flap { position:absolute; inset:0; background:linear-gradient(#9a2247,#640d29); clip-path:polygon(0 0,100% 0,50% 65%); filter:drop-shadow(0 3px 3px #300); }
 .letter { position:absolute; background:#f6ead2; color:#4d292c; border:4px double #b2947d; outline:5px dotted #f6ead2; bottom:-12px; right:-4px; width:143px; padding:12px; font:2rem/1.1 var(--font-script); transform:rotate(14deg); box-shadow:0 5px 15px #3003; }
 .letter i { position:absolute; right:10px; bottom:8px; font:1rem var(--font-display); }
-.sparkle { position:absolute; left:-17px; top:47px; font-size:3.5rem; color:#e4c992; }
+.sparkle { position:absolute; left:-17px; top:47px; font-size:3.5rem; line-height:1; color:#e4c992; }.sparkle.small { left:-2px; top:-14px; font-size:1.6rem; color:#f0cf6a; }.sparkle.tiny { left:auto; top:auto; right:-26px; bottom:-30px; font-size:1.3rem; color:#f0cf6a; }
 h1 { font-family:var(--font-script); font-size:2.7rem; line-height:1.15; margin:0 0 1rem; } h1 span { font-size:.8em; }
 .date { font-family:var(--font-display); font-size:1.15rem; }
 .recipient { margin:1.4rem 0 1.2rem; }.recipient p { font-size:.67rem; margin-bottom:.2rem; }.recipient strong { font-family:var(--font-display); font-size:1.45rem; font-weight:400; overflow-wrap:anywhere; }
 .button { background:#f1e4cf; color:#652a3c; border-color:#f1e4cf; }.button:hover { background:#ddc6a8; }
 .footnote { font-family:var(--font-display); font-style:italic; font-size:.9rem; margin:1rem 0 0; }
+/* Arrival, as in the video: the envelope sharpens from a blur, stars pop in and twinkle,
+   then the remaining text appears together. Final states are fully visible. */
+.envelope { animation:envelope-arrive 1s cubic-bezier(.2,.7,.3,1) both; }
+.sparkle { animation:sparkle-pop .5s .75s cubic-bezier(.3,1.6,.5,1) both, sparkle-twinkle 2.4s 1.25s ease-in-out infinite; }
+.sparkle.small { animation-delay:.9s, 1.4s; }
+.sparkle.tiny { animation-delay:1.05s, 1.55s; }
+.cover-meta, .cover-content > :not(.envelope) { animation:cover-text-arrive 1s 1.1s ease-out both; }
+@keyframes envelope-arrive { from { opacity:0; filter:blur(10px); transform:rotate(-9deg) scale(.86); } to { opacity:1; filter:blur(0); transform:rotate(-9deg); } }
+@keyframes sparkle-pop { from { opacity:0; transform:scale(0) rotate(-45deg); } }
+@keyframes sparkle-twinkle { 50% { opacity:.55; transform:scale(.8) rotate(12deg); } }
+@keyframes cover-text-arrive { from { opacity:0; transform:translateY(12px); } }
 /* Opening: the envelope wobbles, then blurs away while the burgundy fades to paper. */
 .cover.is-leaving { animation:cover-to-paper .65s ease-in both; }
 .is-leaving .envelope { animation:envelope-leave .65s cubic-bezier(.3,0,.5,1) both; }

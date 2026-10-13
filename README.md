@@ -17,7 +17,8 @@ npm ci
 npm run dev
 ```
 
-Visit `http://localhost:4321/?to=Somebody`. `Buka Undangan` requests music playback
+Visit `http://localhost:4321/?to=Somebody`. The cover sharpens the envelope from a blur,
+pops in twinkling stars, then shows its text together (about 2 s). `Buka Undangan` requests music playback
 from that click, plays a short envelope-to-paper transition (about 0.65 s) with a
 bouncing "We're Engaged" entrance (all items together, about 1.4 s), then moves keyboard focus to the main page.
 Reduced-motion users skip the animation. The
