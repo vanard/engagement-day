@@ -21,7 +21,9 @@ Visit `http://localhost:4321/?to=Somebody`. The cover sharpens the envelope from
 pops in twinkling stars, then shows its text together (about 2 s). `Buka Undangan` requests music playback
 from that click, plays a short envelope-to-paper transition (about 0.65 s) with a
 bouncing "We're Engaged" entrance (all items together, about 1.4 s), then moves keyboard focus to the main page.
-Reduced-motion users skip the animation. The
+The closing card's portrait gently breathes, its stars twinkle, and the names and
+"See you there!" write in when it scrolls into view. Reduced-motion users skip all
+animations. The
 cover and main content share a document so audio survives section navigation.
 Without JavaScript the main content is readable below the cover.
 

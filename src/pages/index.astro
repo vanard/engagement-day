@@ -52,9 +52,9 @@ import { invitation } from '../content/invitation';
           <RibbonFrame sage />
           <div class="foreground" data-reveal>
             <p class="eyebrow">With love, always</p>
-            <h2>{invitation.couple.groom} &amp; {invitation.couple.bride}</h2>
+            <h2><span class="starred">{invitation.couple.groom} &amp; {invitation.couple.bride}<span class="stars top" aria-hidden="true"><i>✧</i><i>✦</i><i>✧</i></span></span></h2>
             <img class="portrait bouquet" src={invitation.artwork.bouquet} srcset={`${invitation.artwork.bouquetSmall} 580w, ${invitation.artwork.bouquet} 870w`} sizes="290px" width="870" height="1304" alt="Ilustrasi Vian bersama Ghea yang membawa buket bunga" loading="lazy" />
-            <p class="see-you">See you there!</p>
+            <p class="see-you"><span class="starred">See you there!<span class="stars bottom" aria-hidden="true"><i>✧</i><i>✦</i><i>✧</i></span></span></p>
             <p class="closing">Terima kasih untuk doa dan cinta Anda<br />di awal perjalanan kami.</p>
             <p class="eyebrow endnote">THE ENGAGEMENT · {invitation.event.dateStamp}</p>
           </div>
@@ -77,15 +77,15 @@ h1, .event h2, footer h2 { font-family:var(--font-script); font-size:clamp(3rem,
 .introduction, .greeting, .event-intro, .closing { font-family:var(--font-display); font-size:1.15rem; line-height:1.6; }.introduction { margin-bottom:1.8rem; }.portrait { display:block; height:auto; max-width:100%; mix-blend-mode:multiply; margin-inline:auto; }.engaged { width:310px; }.portrait-frame { position:relative; width:310px; max-width:100%; margin-inline:auto; }.lilies { position:absolute; top:-10%; right:-10%; width:46%; height:auto; pointer-events:none; }.bouquet { width:290px; margin-top:2rem; }
 .names { font-family:var(--font-display); font-size:clamp(1.75rem,5vw,2.4rem); margin:1.8rem 0; }.names span { display:block; font-family:var(--font-script); font-size:1.7rem; margin:.3rem; }.greeting { margin:1.4rem auto; max-width:350px; color:var(--muted); }.text-link { display:inline-flex; gap:1rem; align-items:center; min-height:44px; font-size:.7rem; text-decoration:none; border-bottom:1px solid var(--line); }
 .event { margin-top:1rem; }.event-intro { color:var(--muted); }.event-card { margin:2rem auto 0; }h3 { font-size:.7rem; font-family:var(--font-body); text-transform:uppercase; letter-spacing:.2em; margin-bottom:1rem; }.event-date { font-family:var(--font-display); font-size:clamp(1.6rem,5vw,2.1rem); margin-bottom:1.3rem; }.event-time { margin:1.3rem 0 .7rem; letter-spacing:.1em; font-size:.8rem; }.venue { font-family:var(--font-display); font-size:1.8rem; margin-bottom:.5rem; }.address { font-size:.7rem; max-width:260px; margin:0 auto 1.3rem; }
-footer { color:#5e6845; margin-top:2rem; }footer h2 { margin-bottom:1rem; }.see-you { font-family:var(--font-script); font-size:3rem; margin:1.5rem 0; }.endnote { margin-top:2rem; font-size:.55rem; }
+footer { color:#5e6845; margin-top:2rem; }footer h2 { margin-bottom:1rem; }.see-you { font-family:var(--font-script); font-size:3rem; margin:1.5rem 0; }.starred { position:relative; display:inline-block; }.stars { position:absolute; width:3rem; height:3rem; font-family:var(--font-body); font-style:normal; line-height:1; color:#4b5537; pointer-events:none; }.stars i { position:absolute; font-style:normal; }.stars.top { left:-2.3rem; top:-1.2rem; }.stars.bottom { right:-2.1rem; bottom:-1.6rem; }.stars i:nth-child(1) { left:1rem; top:0; font-size:1.9rem; }.stars i:nth-child(2) { left:0; top:1.6rem; font-size:1rem; }.stars i:nth-child(3) { left:.1rem; top:.2rem; font-size:1rem; }.endnote { margin-top:2rem; font-size:.55rem; }
 @media(min-width:1000px) { main { display:grid; grid-template-columns:1fr 600px; gap:4rem; padding-inline:3rem; }.desktop-note { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100svh; position:sticky; top:0; text-align:center; }.side-names { font-family:var(--font-script); font-size:6rem; line-height:1.1; margin:1.5rem 0 2rem; }.side-names span { display:block; font-size:3rem; }.side-date { margin-top:2rem; letter-spacing:.25em; font-size:.8rem; }.side-message { font-family:var(--font-display); font-size:1.5rem; font-style:italic; }.side-heart { font-size:2rem; } }
 @media(max-width:480px) { main { padding:0; }.section { padding-inline:2.5rem; }nav { padding-inline:1.25rem; } }
 /* Opening: every welcome item bounces in together, like the invitation video. */
-.is-arriving #welcome :global(.ribbon-frame) { animation:arrive-fade 1.4s ease-out both; }
-.is-arriving #welcome .eyebrow, .is-arriving #welcome .introduction, .is-arriving #welcome .greeting, .is-arriving #welcome .text-link { animation:arrive-rise 1.4s ease-out both; }
-.is-arriving #welcome h1, .is-arriving #welcome .names { animation:arrive-write 1.4s ease-out both; }
-.is-arriving .portrait-frame { animation:arrive-bounce 1.4s both; }
-.is-arriving .lilies { animation:arrive-pop 1.4s both; }
+.is-arriving #welcome :global(.ribbon-frame) { animation:arrive-fade 1.4s ease-out backwards; }
+.is-arriving #welcome .eyebrow, .is-arriving #welcome .introduction, .is-arriving #welcome .greeting, .is-arriving #welcome .text-link { animation:arrive-rise 1.4s ease-out backwards; }
+.is-arriving #welcome h1, .is-arriving #welcome .names { animation:arrive-write 1.4s ease-out backwards; }
+.is-arriving .portrait-frame { animation:arrive-bounce 1.4s backwards; }
+.is-arriving .lilies { animation:arrive-pop 1.4s backwards; }
 @keyframes arrive-fade { from { opacity:0; } }
 @keyframes arrive-rise { from { opacity:0; transform:translateY(14px); } }
 @keyframes arrive-write { from { clip-path:inset(-25% 100% -25% -10%); } to { clip-path:inset(-25% -10% -25% -10%); } }
@@ -101,4 +101,15 @@ footer { color:#5e6845; margin-top:2rem; }footer h2 { margin-bottom:1rem; }.see-
   60% { opacity:1; transform:scale(1.18) rotate(6deg); animation-timing-function:ease-in-out; }
   100% { transform:none; }
 }
+/* Closing card, as in the video: the portrait breathes, stars twinkle, and the
+   names and "See you there!" write in when the card is revealed. */
+footer .bouquet { animation:breathe 3.2s ease-in-out infinite; }
+.stars i { animation:twinkle 1.8s ease-in-out infinite; }
+.stars i:nth-child(2) { animation-delay:-.6s; }
+.stars i:nth-child(3) { animation-delay:-1.2s; }
+footer .reveal-active h2 { animation:arrive-write 1.4s .2s ease-out backwards; }
+footer .reveal-active .see-you { animation:arrive-write 1.4s .6s ease-out backwards; }
+@media (max-width:380px) { .stars.top { left:-1.5rem; top:-1.8rem; }.stars.bottom { right:-1.4rem; bottom:-1.9rem; } }
+@keyframes breathe { 50% { transform:scale(1.04); } }
+@keyframes twinkle { 50% { opacity:.35; transform:scale(.7) rotate(15deg); } }
 </style>
