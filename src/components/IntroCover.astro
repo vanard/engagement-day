@@ -34,6 +34,19 @@ h1 { font-family:var(--font-script); font-size:2.7rem; line-height:1.15; margin:
 .recipient { margin:1.4rem 0 1.2rem; }.recipient p { font-size:.67rem; margin-bottom:.2rem; }.recipient strong { font-family:var(--font-display); font-size:1.45rem; font-weight:400; overflow-wrap:anywhere; }
 .button { background:#f1e4cf; color:#652a3c; border-color:#f1e4cf; }.button:hover { background:#ddc6a8; }
 .footnote { font-family:var(--font-display); font-style:italic; font-size:.9rem; margin:1rem 0 0; }
+/* Opening: the envelope wobbles, then blurs away while the burgundy fades to paper. */
+.cover.is-leaving { animation:cover-to-paper .65s ease-in both; }
+.is-leaving .envelope { animation:envelope-leave .65s cubic-bezier(.3,0,.5,1) both; }
+.is-leaving .cover-meta, .is-leaving .cover-content > :not(.envelope) { animation:cover-fade .35s ease-in both; }
+.is-leaving .paper { animation:cover-fade .3s .35s ease-in both; }
+@keyframes cover-to-paper { 0%, 35% { background-color:#652a3c; } 100% { background-color:var(--paper); } }
+@keyframes envelope-leave {
+  0% { transform:rotate(-9deg) scale(1); }
+  20% { transform:rotate(-3deg) scale(1.1); }
+  38% { transform:rotate(-13deg) scale(1.12); filter:blur(0); opacity:1; }
+  100% { transform:rotate(-9deg) scale(1.2); filter:blur(8px); opacity:0; }
+}
+@keyframes cover-fade { to { opacity:0; } }
 @media(min-width:700px) { .cover { padding-block:2.5rem; }.cover-content { padding:2.7rem 2rem 2rem; } }
 @media(max-width:380px) { .couple-names span { display:block; }.envelope { width:190px; }.cover-content { padding-inline:1rem; } }
 </style>

@@ -80,4 +80,25 @@ h1, .event h2, footer h2 { font-family:var(--font-script); font-size:clamp(3rem,
 footer { color:#5e6845; margin-top:2rem; }footer h2 { margin-bottom:1rem; }.see-you { font-family:var(--font-script); font-size:3rem; margin:1.5rem 0; }.endnote { margin-top:2rem; font-size:.55rem; }
 @media(min-width:1000px) { main { display:grid; grid-template-columns:1fr 600px; gap:4rem; padding-inline:3rem; }.desktop-note { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100svh; position:sticky; top:0; text-align:center; }.side-names { font-family:var(--font-script); font-size:6rem; line-height:1.1; margin:1.5rem 0 2rem; }.side-names span { display:block; font-size:3rem; }.side-date { margin-top:2rem; letter-spacing:.25em; font-size:.8rem; }.side-message { font-family:var(--font-display); font-size:1.5rem; font-style:italic; }.side-heart { font-size:2rem; } }
 @media(max-width:480px) { main { padding:0; }.section { padding-inline:2.5rem; }nav { padding-inline:1.25rem; } }
+/* Opening: every welcome item bounces in together, like the invitation video. */
+.is-arriving #welcome :global(.ribbon-frame) { animation:arrive-fade 1.4s ease-out both; }
+.is-arriving #welcome .eyebrow, .is-arriving #welcome .introduction, .is-arriving #welcome .greeting, .is-arriving #welcome .text-link { animation:arrive-rise 1.4s ease-out both; }
+.is-arriving #welcome h1, .is-arriving #welcome .names { animation:arrive-write 1.4s ease-out both; }
+.is-arriving .portrait-frame { animation:arrive-bounce 1.4s both; }
+.is-arriving .lilies { animation:arrive-pop 1.4s both; }
+@keyframes arrive-fade { from { opacity:0; } }
+@keyframes arrive-rise { from { opacity:0; transform:translateY(14px); } }
+@keyframes arrive-write { from { clip-path:inset(-25% 100% -25% -10%); } to { clip-path:inset(-25% -10% -25% -10%); } }
+@keyframes arrive-bounce {
+  0% { opacity:0; transform:scale(.2); animation-timing-function:cubic-bezier(.2,.7,.4,1); }
+  50% { opacity:1; transform:scale(1.08); animation-timing-function:ease-in-out; }
+  72% { transform:scale(.96); animation-timing-function:ease-in-out; }
+  88% { transform:scale(1.02); animation-timing-function:ease-in-out; }
+  100% { transform:scale(1); }
+}
+@keyframes arrive-pop {
+  0% { opacity:0; transform:scale(0) rotate(-30deg); animation-timing-function:cubic-bezier(.2,.7,.4,1); }
+  60% { opacity:1; transform:scale(1.18) rotate(6deg); animation-timing-function:ease-in-out; }
+  100% { transform:none; }
+}
 </style>

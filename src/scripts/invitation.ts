@@ -13,19 +13,37 @@ export function initInvitation() {
   if (guest) document.querySelectorAll('[data-guest-name]').forEach((element) => { element.textContent = guest; });
   const music = initMusic();
   let opened = false;
-  const open = (playMusic: boolean) => {
-    if (opened) return;
-    opened = true;
+  const show = () => {
     main.hidden = false;
     cover.hidden = true;
-    music.open(playMusic);
     main.focus({ preventScroll: true });
     initReveals();
   };
+  const open = (playMusic: boolean) => {
+    if (opened) return;
+    opened = true;
+    music.open(playMusic);
+    show();
+  };
   opener.addEventListener('click', (event) => {
     event.preventDefault();
-    open(true);
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    if (opened) return;
+    opened = true;
+    // Music starts inside the click gesture; the envelope animation follows.
+    music.open(true);
+    const animate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (animate) {
+      // The welcome card gets its own entrance instead of the scroll reveal.
+      main.querySelector('#welcome [data-reveal]')?.removeAttribute('data-reveal');
+      main.classList.add('is-arriving');
+      cover.classList.add('is-leaving');
+    }
+    const finish = () => {
+      show();
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    };
+    if (animate) window.setTimeout(finish, 650);
+    else finish();
     if (!new URLSearchParams(location.hash.slice(1)).has('token')) {
       history.replaceState(null, '', `${location.pathname}${location.search}#invitation`);
     }

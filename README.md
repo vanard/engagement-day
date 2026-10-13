@@ -17,8 +17,10 @@ npm ci
 npm run dev
 ```
 
-Visit `http://localhost:4321/?to=Somebody`. `Buka Undangan` reveals the main page,
-moves keyboard focus, and requests music playback from that same click. The
+Visit `http://localhost:4321/?to=Somebody`. `Buka Undangan` requests music playback
+from that click, plays a short envelope-to-paper transition (about 0.65 s) with a
+bouncing "We're Engaged" entrance (all items together, about 1.4 s), then moves keyboard focus to the main page.
+Reduced-motion users skip the animation. The
 cover and main content share a document so audio survives section navigation.
 Without JavaScript the main content is readable below the cover.
 
