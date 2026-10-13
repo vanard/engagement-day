@@ -54,7 +54,7 @@ Glenn Fredly — Kisah Romantis MP3, encoded at 128 kbps (about 545 KB).
 The portrait WebP images come from the two user-supplied WhatsApp JPEG illustrations
 (23 September 2026), replacing the lower-resolution video crops. Each has two
 responsive sizes for sharp rendering on high-density screens; the full artwork is preserved.
-The envelope, lace border, ribbon frames, and table illustration are original CSS/SVG.
+The envelope, lace border, ribbon frames, pink lilies on the engaged portrait, and table illustration are original CSS/SVG.
 Video audio is not bundled. Portrait asset paths are configured in the content file. Cormorant Garamond
 and Great Vibes are locally hosted through Fontsource (OFL-licensed font packages).
 There are no runtime Google Fonts requests. The visual direction follows the supplied engagement video. Music pauses when the tab is hidden and attempts to resume when the guest returns to the same page if it was playing before; browser playback rules may still require a tap. A manual pause remains paused. Set `event.mapUrl` when a real venue link is available.
