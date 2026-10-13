@@ -49,8 +49,8 @@ replace real iPhone/Android or real-song playback checks.
 
 Edit the typed content file. Set `isPreview` to false only after replacing the
 temporary content. Place a licensed MP3 in `public/audio/` and set `music.src`.
-The configured soundtrack is a 35-second clip (01:29–02:04) from the user-supplied
-Glenn Fredly — Kisah Romantis MP3, encoded at 128 kbps (about 561 KB).
+The configured soundtrack is a 34-second clip (01:30–02:04) from the user-supplied
+Glenn Fredly — Kisah Romantis MP3, encoded at 128 kbps (about 545 KB).
 The portrait WebP images come from the two user-supplied WhatsApp JPEG illustrations
 (23 September 2026), replacing the lower-resolution video crops. Each has two
 responsive sizes for sharp rendering on high-density screens; the full artwork is preserved.
