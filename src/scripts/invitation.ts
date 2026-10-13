@@ -44,9 +44,7 @@ export function initInvitation() {
     };
     if (animate) window.setTimeout(finish, 650);
     else finish();
-    if (!new URLSearchParams(location.hash.slice(1)).has('token')) {
-      history.replaceState(null, '', `${location.pathname}${location.search}#invitation`);
-    }
+    history.replaceState(null, '', `${location.pathname}${location.search}#invitation`);
   });
   document.querySelector('.skip-link')?.addEventListener('click', () => open(false));
   // Direct section links work, but never bypass the browser's music gesture rules.

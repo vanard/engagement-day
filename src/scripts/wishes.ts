@@ -1,6 +1,25 @@
 import type { ApiError, PublicWish, WishesPage, WishResult } from '../lib/contracts';
 import { invitation } from '../content/invitation';
 
+const tokenPattern = /^[A-Za-z0-9_-]{16}$/;
+const tokenStorageKey = 'lamaran-invitation';
+
+// Group links end in `#<code>`. Fragments are not sent in page requests or access logs.
+// The code moves to this tab's session storage and leaves the address bar, so copied
+// URLs and screenshots taken after opening do not reveal it.
+function readInvitationToken(): string {
+  const fragment = location.hash.slice(1);
+  if (tokenPattern.test(fragment)) {
+    try { sessionStorage.setItem(tokenStorageKey, fragment); } catch { /* storage unavailable: keep it for this page only */ }
+    history.replaceState(null, '', `${location.pathname}${location.search}`);
+    return fragment;
+  }
+  try {
+    const stored = sessionStorage.getItem(tokenStorageKey) ?? '';
+    return tokenPattern.test(stored) ? stored : '';
+  } catch { return ''; }
+}
+
 export function initWishes() {
   const section = document.querySelector<HTMLElement>('#wishes');
   const form = document.querySelector<HTMLFormElement>('[data-wishes-form]');
@@ -9,9 +28,8 @@ export function initWishes() {
   const list = document.querySelector<HTMLElement>('[data-wishes-list]');
   const listStatus = document.querySelector<HTMLElement>('[data-wishes-list-status]');
   if (!section || !form || !fieldset || !status || !list || !listStatus) return;
-  // Fragments are not sent to the server in page requests or access logs.
-  const token = new URLSearchParams(location.hash.slice(1)).get('token') ?? '';
-  const authorizedLink = /^[A-Za-z0-9_-]{43}$/.test(token);
+  const token = readInvitationToken();
+  const authorizedLink = token !== '';
   fieldset.disabled = !authorizedLink;
   // status.textContent = authorizedLink
   //   ? 'Ucapan Anda akan tampil setelah berhasil dikirim.'

@@ -65,9 +65,10 @@ There are no runtime Google Fonts requests. The visual direction follows the sup
 ## Wishes
 
 The section shows the latest three visible wishes and immediately adds a newly saved
-wish for the sender. Personal invitation links enable submissions; new wishes are
-visible by default, and the owner can hide them. The server validates token hashes, limits each
-invitation to three new wishes per hour, and deduplicates retries in Postgres.
+wish for the sender. Group invitation links (one 16-character code shared by each
+guest group) enable submissions; the code is hidden from the address bar after opening.
+New wishes are visible by default, and the owner can hide them. The server validates
+code hashes, limits each group to 30 new wishes per hour, and deduplicates retries in Postgres.
 
 Follow [the wishes setup and owner guide](docs/wishes.md) to apply the migrations,
 configure server-only environment variables, issue private links, hide unwanted wishes

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { PublicWish, WishInput } from '../lib/contracts.ts';
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const tokenPattern = /^[A-Za-z0-9_-]{43}$/;
+const tokenPattern = /^[A-Za-z0-9_-]{16}$/;
 const maxBytes = 8192;
 class ApiFailure extends Error {
   status: number;

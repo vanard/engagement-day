@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 import { createWishesHandlers } from '../../src/server/wishes.ts';
 
-const token = randomBytes(32).toString('base64url');
+const token = randomBytes(12).toString('base64url');
 const tokenHash = createHash('sha256').update(token).digest('hex');
 const input = { token, idempotencyKey: randomUUID(), name: 'Guest', message: 'Selamat!' };
 const post = (body: unknown) => new Request('https://invitation.test/api/wishes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -13,7 +13,7 @@ const config = () => ({ url: 'https://database.test', key: 'sb_secret_test' });
 
 test('rejects malformed, unauthorized and oversized submissions before database access', async () => {
   const api = createWishesHandlers(config, async () => { throw new Error('Unexpected database access'); });
-  for (const [body, status] of [[null, 400], [{ ...input, token: '' }, 401], [{ ...input, name: ' ' }, 400], [{ ...input, message: 'a'.repeat(1001) }, 400], [{ ...input, idempotencyKey: 'bad' }, 400], [{ ...input, extra: 'x'.repeat(9000) }, 413]] as const) {
+  for (const [body, status] of [[null, 400], [{ ...input, token: '' }, 401], [{ ...input, token: randomBytes(32).toString('base64url') }, 401], [{ ...input, name: ' ' }, 400], [{ ...input, message: 'a'.repeat(1001) }, 400], [{ ...input, idempotencyKey: 'bad' }, 400], [{ ...input, extra: 'x'.repeat(9000) }, 413]] as const) {
     assert.equal((await api.POST(post(body))).status, status);
   }
   assert.equal((await api.POST(new Request('https://invitation.test/api/wishes', { method: 'POST', body: 'text' }))).status, 415);
@@ -74,7 +74,7 @@ test('database migrations auto-publish new wishes, allow manual hiding, and enfo
     await db.query('insert into public.invitation_parties(display_name, token_hash) values ($1,$2)', ['Synthetic Guest', tokenHash]);
     const olderKey = randomUUID();
     await db.query("insert into public.wishes(party_id, idempotency_key, name, message, created_at) select id, $1, 'Older wish', 'Hello', now() - interval '2 hours' from public.invitation_parties where token_hash = $2", [olderKey, tokenHash]);
-    await db.exec(await readFile(new URL('../../supabase/migrations/0003_auto_publish_wishes.sql', import.meta.url), 'utf8'));
+    for (const name of ['0003_auto_publish_wishes.sql', '0004_group_invitation_quota.sql']) await db.exec(await readFile(new URL(`../../supabase/migrations/${name}`, import.meta.url), 'utf8'));
     assert.equal((await db.query<{ approved: boolean }>('select approved from public.wishes where idempotency_key = $1', [olderKey])).rows[0].approved, false);
     await db.query('delete from public.wishes where idempotency_key = $1', [olderKey]);
     const submitResult = async (hash: string, key: string, name = 'Guest', message = 'Hello') => {
@@ -97,8 +97,8 @@ test('database migrations auto-publish new wishes, allow manual hiding, and enfo
     await db.query('update public.wishes set approved = false where idempotency_key = $1', [key]);
     assert.equal((await submitResult(tokenHash, key)).approved, false);
     assert.equal((await db.query<{ count: number }>('select count(*)::int as count from public.wishes where approved = true')).rows[0].count, 0);
-    assert.equal(await submit(tokenHash, randomUUID()), 'saved');
-    assert.equal(await submit(tokenHash, randomUUID()), 'saved');
+    // A shared group code allows 30 new wishes per hour; the hidden wish counts too.
+    for (let i = 1; i < 30; i++) assert.equal(await submit(tokenHash, randomUUID()), 'saved');
     assert.equal(await submit(tokenHash, randomUUID()), 'rate_limited');
     assert.equal(await submit(tokenHash, key), 'saved');
     await db.exec("update public.wishes set created_at = now() - interval '2 hours'");

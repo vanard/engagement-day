@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const token = 'a'.repeat(43); // Synthetic, never an issued invitation.
+const token = 'a'.repeat(16); // Synthetic, never an issued invitation.
 const wishes = Array.from({ length: 3 }, (_, i) => ({ id: `wish-${i}`, name: i ? `Guest ${i}` : '<img src=x onerror=alert(1)>', message: 'Semoga bahagia selalu!', createdAt: '2026-09-23T12:00:00Z' }));
 
 test('reports non-JSON hosting errors as a service failure instead of a connection failure', async ({ page }) => {
@@ -38,7 +38,11 @@ test('keeps entered data and the retry key after failure, then confirms only a s
       ? { status: 503, json: { error: { code: 'UNAVAILABLE', message: 'Silakan coba lagi.' } } }
       : { json: { saved: true, status: 'approved', wish: newWish } });
   });
-  await page.goto(`/?to=Display%20only#token=${token}`);
+  await page.goto(`/?to=Display%20only#${token}`);
+  // The group code leaves the address bar but still authorizes this tab after a reload.
+  await expect(page).toHaveURL(/\?to=Display%20only$/);
+  await page.reload();
+  expect(page.url()).not.toContain(token);
   await page.getByRole('link', { name: 'Buka Undangan' }).click();
   await page.getByLabel('Nama Anda').fill('Guest');
   await page.getByRole('textbox', { name: 'Doa & ucapan', exact: true }).fill('Selamat!');
