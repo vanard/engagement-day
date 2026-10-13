@@ -1,5 +1,6 @@
 -- Invitation identities now represent groups of guests sharing one code, so the shared
 -- quota rises from 3 to 30 new wishes per hour per group. Retries remain idempotent.
+-- The body avoids `$` and uses a named tag so the Supabase SQL editor parses it whole.
 begin;
 
 create or replace function public.submit_wish(p_token_hash text, p_key uuid, p_name text, p_message text)
@@ -7,12 +8,12 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = ''
-as $$
+as $fn$
 declare
   party uuid;
   saved_wish public.wishes%rowtype;
 begin
-  if p_token_hash is null or p_token_hash !~ '^[a-f0-9]{64}$' then
+  if p_token_hash is null or char_length(p_token_hash) <> 64 or p_token_hash ~ '[^a-f0-9]' then
     return jsonb_build_object('outcome', 'invalid_token');
   end if;
   select id into party from public.invitation_parties where token_hash = p_token_hash for update;
@@ -45,7 +46,7 @@ begin
     )
   );
 end;
-$$;
+$fn$;
 
 revoke all on function public.submit_wish(text, uuid, text, text) from public, anon, authenticated;
 grant execute on function public.submit_wish(text, uuid, text, text) to service_role;
