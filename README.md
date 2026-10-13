@@ -64,6 +64,11 @@ Video audio is not bundled. Portrait asset paths are configured in the content f
 and Great Vibes are locally hosted through Fontsource (OFL-licensed font packages).
 There are no runtime Google Fonts requests. The visual direction follows the supplied engagement video. Music pauses when the tab is hidden and attempts to resume when the guest returns to the same page if it was playing before; browser playback rules may still require a tap. A manual pause remains paused. Set `event.mapUrl` when a real venue link is available.
 
+Link previews (WhatsApp, Instagram, Facebook) use `share` in the content file and
+`public/images/og-engaged.jpg`, a 1200×630 JPEG (about 66 KB) made from the engaged
+portrait. Preview URLs are absolute, based on `site` in `astro.config.mjs`; update it
+if the domain changes. WhatsApp caches previews, so test with a fresh link after deploying.
+
 ## Wishes
 
 The section shows the latest three visible wishes and immediately adds a newly saved

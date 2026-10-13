@@ -3,6 +3,8 @@ export interface InvitationContent {
   couple: { groom: string; bride: string };
   greeting: string;
   artwork: { engaged: string; engagedSmall: string; bouquet: string; bouquetSmall: string };
+  /** Link preview for WhatsApp/Instagram/Facebook. The image is 1200x630 JPEG. */
+  share: { title: string; description: string; image: string; imageAlt: string };
   event: { dateStamp: string; dateLabel: string; timeLabel: string; startsAt: string | null; timeZone: string; venue: string; address: string; mapUrl: string | null };
   music: { src: string | null; title: string };
 }
@@ -15,6 +17,12 @@ export const invitation: InvitationContent = {
     engagedSmall: '/images/couple-engaged-small.webp',
     bouquet: '/images/couple-bouquet.webp',
     bouquetSmall: '/images/couple-bouquet-small.webp',
+  },
+  share: {
+    title: 'Lamaran Vian & Ghea',
+    description: 'Dengan penuh syukur, kami mengundang Anda untuk berbagi kebahagiaan di hari lamaran kami.',
+    image: '/images/og-engaged.jpg',
+    imageAlt: 'Ilustrasi Vian dan Ghea memperlihatkan cincin lamaran',
   },
   greeting: '',
   event: {
