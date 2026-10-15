@@ -1,8 +1,10 @@
 # Wishes setup and owner operations
 
-The page loads the latest **three visible wishes** when the section approaches
-the viewport. A successfully saved wish appears immediately for its sender.
-There are no older-message or reload buttons and no polling. New wishes are
+The page loads the newest **five visible wishes** when the section approaches
+the viewport. Numbered page buttons (‹ 1 2 3 … ›) below the list show older
+wishes, five at a time; they appear only when there is more than one page. A
+successfully saved wish appears immediately at the top of page 1 for its sender.
+There are no reload buttons and no polling. New wishes are
 visible by default; the owner can hide them. There is no attendance collection.
 
 ## Connect the backend
@@ -19,7 +21,7 @@ visible by default; the owner can hide them. There is no attendance collection.
 4. Vercel deploys `api/wishes.ts` separately from the static Astro site. Astro's
    dev/preview commands do not run this endpoint. Use Vercel's local runtime or a
    designated preview deployment for a real end-to-end integration check.
-5. Test a group link, immediate publication, manual hiding, latest-three ordering,
+5. Test a group link, immediate publication, manual hiding, newest-first ordering, page buttons,
    display after submission, retries, invalid token, and database failure before launch.
    Missing configuration returns a recoverable 503; invitation details still render.
 
@@ -85,7 +87,7 @@ successful after reaching the limit; reused keys with changed content get 409.
 Browser failures keep text and the submission key for retries on the current
 page. Reloading closes that retry session, so retry in place after network errors.
 All POST responses and errors are `no-store`; only visible public GET responses
-are cached. The API default page size is three and its maximum is 50.
+are cached. The API takes `page` (1-based) and `limit`; the default page size is five and its maximum is 50. Responses include the total count of visible wishes.
 
 `npm test` tests API authorization/validation and runs all migrations against
 PGlite (embedded Postgres used only for development tests). It checks visibility,

@@ -15,9 +15,10 @@
       </fieldset>
       <p id="wishes-status" class="status" role="status" data-wishes-status></p>
     </form>
-    <h3 class="latest-heading">Ucapan terbaru</h3>
+    <h3 class="latest-heading" tabindex="-1" data-wishes-list-heading>Ucapan terbaru</h3>
     <p class="list-status" role="status" data-wishes-list-status>Ruang kecil untuk doa-doa yang indah.</p>
     <div class="wish-list" data-wishes-list></div>
+    <nav class="pagination" aria-label="Halaman ucapan" data-wishes-pagination hidden></nav>
   </div>
 </section>
 <style>
@@ -34,5 +35,14 @@
   .wish-list :global(article) { border: 1px solid var(--line); background: var(--paper); padding: 1.25rem; overflow-wrap: anywhere; }
   .wish-list :global(h4) { margin: 0; color: var(--ink); font-family: var(--font-display); font-size: 1.3rem; }
   .wish-list :global(p) { white-space: pre-wrap; font-size: .9rem; line-height: 1.7; margin-bottom: .7rem; }
+  .latest-heading:focus { outline: none; }
+  .latest-heading:focus-visible { outline: 3px solid var(--accent); }
+  .pagination { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .35rem; margin-bottom: 1.5rem; }
+  .pagination[hidden] { display: none; }
+  .pagination[aria-busy='true'] { opacity: .6; }
+  .pagination :global(button) { min-width: 44px; min-height: 44px; padding: 0 .6rem; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 2px; font-family: var(--font-display); font-size: 1.05rem; }
+  .pagination :global(button:hover:not(:disabled)) { border-color: var(--forest); }
+  .pagination :global(button[aria-current='page']) { background: var(--forest); border-color: var(--forest); color: var(--paper); }
+  .pagination :global(span) { min-width: 1.5rem; text-align: center; color: var(--muted); }
   .wish-list :global(time) { font-size: .65rem; color: var(--muted); }
 </style>

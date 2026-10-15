@@ -71,8 +71,8 @@ if the domain changes. WhatsApp caches previews, so test with a fresh link after
 
 ## Wishes
 
-The section shows the latest three visible wishes and immediately adds a newly saved
-wish for the sender. Group invitation links (one 16-character code shared by each
+The section shows visible wishes newest first, five per page, with numbered page
+buttons below the list, and immediately adds a newly saved wish for the sender. Group invitation links (one 16-character code shared by each
 guest group) enable submissions; the code is hidden from the address bar after opening.
 New wishes are visible by default, and the owner can hide them. The server validates
 code hashes, limits each group to 30 new wishes per hour, and deduplicates retries in Postgres.

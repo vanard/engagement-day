@@ -19,24 +19,47 @@ test('rejects malformed, unauthorized and oversized submissions before database 
   assert.equal((await api.POST(new Request('https://invitation.test/api/wishes', { method: 'POST', body: 'text' }))).status, 415);
 });
 
-test('latest page requests approved rows only and strips all private fields', async () => {
+test('numbered pages request approved rows only, report the total, and strip all private fields', async () => {
   let requested = '';
-  const rows = Array.from({ length: 4 }, (_, i) => ({ id: randomUUID(), name: `Guest ${i}`, message: 'Hello', created_at: '2026-09-23T12:00:00.123456+00:00', party_id: 'PRIVATE', token_hash: 'PRIVATE' }));
-  const api = createWishesHandlers(config, async (url) => { requested = String(url); return Response.json(rows); });
+  let prefer = '';
+  const rows = Array.from({ length: 5 }, (_, i) => ({ id: randomUUID(), name: `Guest ${i}`, message: 'Hello', created_at: '2026-09-23T12:00:00.123456+00:00', party_id: 'PRIVATE', token_hash: 'PRIVATE' }));
+  const api = createWishesHandlers(config, async (url, options) => {
+    requested = String(url);
+    prefer = new Headers(options?.headers).get('Prefer') ?? '';
+    return Response.json(rows, { headers: { 'Content-Range': '5-9/23' } });
+  });
   const response = await api.GET(new Request('https://invitation.test/api/wishes'));
   const page = await response.json();
-  assert.equal(page.items.length, 3);
-  assert.ok(page.nextCursor);
+  assert.equal(page.items.length, 5);
+  assert.deepEqual([page.page, page.pageSize, page.total], [1, 5, 23]);
   assert.ok(!JSON.stringify(page).includes('PRIVATE'));
-  const query = new URL(requested).searchParams;
+  assert.equal(prefer, 'count=exact');
+  let query = new URL(requested).searchParams;
   assert.equal(query.get('approved'), 'eq.true');
   assert.equal(query.get('select'), 'id,name,message,created_at');
   assert.equal(query.get('order'), 'created_at.desc,id.desc');
-  assert.equal(query.get('limit'), '4');
+  assert.equal(query.get('limit'), '5');
+  assert.equal(query.get('offset'), '0');
   assert.match(response.headers.get('Cache-Control')!, /s-maxage=60/);
-  await api.GET(new Request(`https://invitation.test/api/wishes?cursor=${page.nextCursor}`));
-  assert.ok(new URL(requested).searchParams.get('or')!.includes(rows[2].id));
-  for (const query of ['limit=51', 'limit=0', 'cursor=bad']) assert.equal((await api.GET(new Request(`https://invitation.test/api/wishes?${query}`))).status, 400);
+  await api.GET(new Request('https://invitation.test/api/wishes?limit=5&page=3'));
+  query = new URL(requested).searchParams;
+  assert.equal(query.get('offset'), '10');
+  for (const query of ['limit=51', 'limit=0', 'page=0', 'page=-1', 'page=x', 'page=10000']) assert.equal((await api.GET(new Request(`https://invitation.test/api/wishes?${query}`))).status, 400);
+});
+
+test('a page past the end returns no items with the current total', async () => {
+  const requests: string[] = [];
+  const api = createWishesHandlers(config, async (url) => {
+    requests.push(String(url));
+    return requests.length === 1
+      ? Response.json({ code: 'PGRST103' }, { status: 416, headers: { 'Content-Range': '*/7' } })
+      : Response.json([], { headers: { 'Content-Range': '0-0/7' } });
+  });
+  const page = await (await api.GET(new Request('https://invitation.test/api/wishes?page=4'))).json();
+  assert.deepEqual([page.items, page.total, page.page], [[], 7, 4]);
+  assert.equal(new URL(requests[1]).searchParams.get('offset'), '0');
+  const broken = createWishesHandlers(config, async () => Response.json([]));
+  assert.equal((await broken.GET(new Request('https://invitation.test/api/wishes'))).status, 503);
 });
 
 test('server hashes tokens, maps failures, and never caches private responses', async () => {

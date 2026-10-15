@@ -55,40 +55,53 @@ async function readInput(request: Request): Promise<WishInput> {
 }
 
 export function createWishesHandlers(config: () => { url?: string; key?: string }, fetcher: typeof fetch = fetch) {
-  async function database(path: string, init: RequestInit = {}) {
+  async function query(path: string, init: RequestInit = {}) {
     const { url, key } = config();
     if (!url || !key) throw new Error('Database not configured');
     const headers = new Headers(init.headers);
     headers.set('apikey', key);
     if (!key.startsWith('sb_secret_')) headers.set('Authorization', `Bearer ${key}`);
     headers.set('Content-Type', 'application/json');
-    const response = await fetcher(`${url.replace(/\/$/, '')}/rest/v1/${path}`, { ...init, headers, signal: AbortSignal.timeout(8000) });
+    return fetcher(`${url.replace(/\/$/, '')}/rest/v1/${path}`, { ...init, headers, signal: AbortSignal.timeout(8000) });
+  }
+  async function database(path: string, init: RequestInit = {}) {
+    const response = await query(path, init);
     if (!response.ok) throw new Error('Database request failed');
     return response.json();
+  }
+  // PostgREST reports the exact match count as `Content-Range: 0-4/23` (or `*/23`).
+  function totalFrom(response: Response) {
+    const total = Number(response.headers.get('content-range')?.split('/')[1]);
+    if (!Number.isSafeInteger(total) || total < 0) throw new Error('Missing wish count');
+    return total;
   }
   return {
     async GET(request: Request) {
       try {
         const url = new URL(request.url);
-        const limitText = url.searchParams.get('limit') ?? '3';
+        const limitText = url.searchParams.get('limit') ?? '5';
+        const pageText = url.searchParams.get('page') ?? '1';
         if (!/^\d{1,2}$/.test(limitText) || Number(limitText) < 1 || Number(limitText) > 50) throw new ApiFailure(400, 'INVALID_PAGE', 'Ukuran halaman tidak valid.');
+        if (!/^\d{1,4}$/.test(pageText) || Number(pageText) < 1) throw new ApiFailure(400, 'INVALID_PAGE', 'Halaman ucapan tidak valid.');
         const limit = Number(limitText);
-        const query = new URLSearchParams({ select: 'id,name,message,created_at', approved: 'eq.true', order: 'created_at.desc,id.desc', limit: String(limit + 1) });
-        const cursor = url.searchParams.get('cursor');
-        if (cursor) {
-          let parsed: { createdAt: string; id: string };
-          try {
-            if (cursor.length > 300 || !/^[A-Za-z0-9_-]+$/.test(cursor)) throw new Error();
-            parsed = JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8'));
-            if (!uuid.test(parsed.id) || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|\+00:00)$/.test(parsed.createdAt) || !Number.isFinite(Date.parse(parsed.createdAt))) throw new Error();
-          } catch { throw new ApiFailure(400, 'INVALID_PAGE', 'Halaman ucapan tidak valid.'); }
-          query.set('or', `(created_at.lt.${parsed.createdAt},and(created_at.eq.${parsed.createdAt},id.lt.${parsed.id}))`);
+        const page = Number(pageText);
+        const params = new URLSearchParams({ select: 'id,name,message,created_at', approved: 'eq.true', order: 'created_at.desc,id.desc', limit: String(limit), offset: String((page - 1) * limit) });
+        const count = { headers: { Prefer: 'count=exact' } };
+        let response = await query(`wishes?${params}`, count);
+        let rows: Array<{ id: string; name: string; message: string; created_at: string }> = [];
+        if (response.status === 416) {
+          // A page past the end (for example after wishes were hidden): report the total only.
+          params.set('limit', '1');
+          params.set('offset', '0');
+          response = await query(`wishes?${params}`, count);
+          if (!response.ok) throw new Error('Database request failed');
+        } else {
+          if (!response.ok) throw new Error('Database request failed');
+          rows = await response.json();
         }
-        const rows = await database(`wishes?${query}`) as Array<{ id: string; name: string; message: string; created_at: string }>;
+        const total = totalFrom(response);
         const items: PublicWish[] = rows.slice(0, limit).map((row) => ({ id: row.id, name: row.name, message: row.message, createdAt: row.created_at }));
-        const last = items.at(-1);
-        const nextCursor = rows.length > limit && last ? Buffer.from(JSON.stringify({ createdAt: last.createdAt, id: last.id })).toString('base64url') : null;
-        return reply({ items, nextCursor }, 200, 'public, max-age=30, s-maxage=60, stale-while-revalidate=120');
+        return reply({ items, page, pageSize: limit, total }, 200, 'public, max-age=30, s-maxage=60, stale-while-revalidate=120');
       } catch (error) { return failure(error); }
     },
     async POST(request: Request) {
